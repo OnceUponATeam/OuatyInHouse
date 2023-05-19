@@ -1,0 +1,8 @@
+aiosqlite
+disnake==2.7.0
+disnake-pagination
+python-dotenv
+trueskill
+mpmath
+topggpy
+websockets
