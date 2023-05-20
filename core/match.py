@@ -85,7 +85,7 @@ async def start_queue(bot, channel, game, author=None, existing_msg = None, game
 
     def get_title(game):
         if game == "lol":
-            return "Match Overview - SR Tournament Draft"
+            return "Aperçu des matchs - Faille de l'invocateur Draft de tournoi"
         elif game == "valorant":
             return "Match Overview - Valorant Competitive"
         elif game == "overwatch":
@@ -100,7 +100,7 @@ async def start_queue(bot, channel, game, author=None, existing_msg = None, game
         try:
             return await channel.send(
                 embed=error(
-                    f"{channel.mention} is not setup as the queue channel, please run this command in a queue channel."
+                    f"{channel.mention} n'est pas un salon de file, s'il vous plait faites cette commande dans un salon de file."
                 )
             )
         except:
@@ -131,10 +131,10 @@ async def start_queue(bot, channel, game, author=None, existing_msg = None, game
                 else:
                     slot2 += f"<@{member[0]}> - `{member[1].capitalize()}`\n"
         else:
-            slot1 = "No members yet"
-            slot2 = "No members yet"
-        embed.add_field(name="Slot 1", value=slot1)
-        embed.add_field(name="Slot 2", value=slot2)
+            slot1 = "Pas encore de joueur"
+            slot2 = "Pas encore de joueur"
+        embed.add_field(name="Groupe 1", value=slot1)
+        embed.add_field(name="Groupe 2", value=slot2)
         sbmm = True
     else:
         if existing_msg:
@@ -147,8 +147,8 @@ async def start_queue(bot, channel, game, author=None, existing_msg = None, game
                 else:
                     red_value += f"<@{member[0]}> - `{member[1].capitalize()}`\n"
         else:
-            blue_value = "No members yet"
-            red_value = "No members yet"
+            blue_value = "Pas encore de joueur"
+            red_value = "Pas encore de joueur"
         embed.add_field(name="🔵 Blue", value=blue_value)
         embed.add_field(name="🔴 Red", value=red_value)
         sbmm = False
@@ -404,7 +404,7 @@ class LeaveButton(ui.Button):
     def __init__(self, bot, game):
         self.bot = bot
         super().__init__(
-            label="Leave Queue", style=ButtonStyle.red, custom_id=f"{game}-queue:leave"
+            label="Quitter la file", style=ButtonStyle.red, custom_id=f"{game}-queue:leave"
         )
 
     async def callback(self, inter):
@@ -422,7 +422,7 @@ class LeaveButton(ui.Button):
             embed = await view.gen_embed(inter.message, view.game_id)
 
             for button in view.children:
-                if button.label in ["Leave Queue", "Switch Team", "Duo"]:
+                if button.label in ["Quitter la file", "Switch Team", "Duo"]:
                     continue
 
                 data = await self.bot.fetch(
@@ -693,7 +693,7 @@ class ReadyButton(ui.Button):
 
                     value += f"<@{data[0]}> - `{data[1].capitalize()}`\n"
             else:
-                value = "No members yet"
+                value = "Pas encore de joueur"
 
             embed.add_field(name=name, value=value)
 
@@ -911,7 +911,7 @@ class ReadyButton(ui.Button):
                 await self.msg.channel.send(
                     content=", ".join(f"<@{x}>" for x in players_removed),
                     embed=Embed(
-                        description="Mentioned players have been removed from the queue for not being ready on time.",
+                        description="Les joueurs mentionnés on été supprimé de la file car ils n'étaient pas prêt à temps.",
                         color=Color.blurple(),
                     ),
                     delete_after=60.0,
@@ -1312,7 +1312,7 @@ class Queue(ui.View):
                     value += f"<@{data[0]}> - `{data[1].capitalize()}`\n"
 
             else:
-                value = "No members yet"
+                value = "Pas encore de joueur"
 
             embed.add_field(name=name, value=value)
 
@@ -1326,7 +1326,7 @@ class Queue(ui.View):
     async def check_end(self, inter) -> None:
         checks_passed = 0
         for button in self.children:
-            if button.label in ["Leave Queue", "Switch Team", "Duo"]:
+            if button.label in ["Quitter la file", "Switch Team", "Duo"]:
                 continue
 
             data = await self.bot.fetch(
@@ -1366,7 +1366,7 @@ class Queue(ui.View):
             )
 
             embed = Embed(
-                description=f"Game was found! Time to ready up!", color=Color.blurple()
+                description=f"Une game a été trouvée! Il est temps de cliquer sur prêt!", color=Color.blurple()
             )
 
             await inter.message.reply(mentions, embed=embed, delete_after=300.0)

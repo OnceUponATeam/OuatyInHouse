@@ -86,7 +86,7 @@ class ChannelCommands(Cog):
 
                 await inter.edit_original_message(
                     embed=embeds.success(
-                        f"{channel.mention} est défini correctement comme le salon de file."
+                        f"{channel.mention} a été défini avec succès comme salon de file."
                     )
                 )
 
@@ -96,7 +96,7 @@ class ChannelCommands(Cog):
             await self.bot.execute(
                 "INSERT INTO queuechannels(channel_id, region, game) VALUES($1, $2, $3)", channel.id, "none", game
             )
-            await ctx.send(embed=embeds.success(f"{channel.mention} est correctement défini comme salon de file."))
+            await ctx.send(embed=embeds.success(f"{channel.mention} a été défini avec succès comme salon de file."))
 
     @slash_command(name="setchannel")
     async def setchannel_slash(self, ctx, channel: TextChannel, game = Param(choices={"League Of Legends": "lol", "Valorant": "valorant", "Overwatch": "overwatch", "Other": "other"})):

@@ -78,7 +78,7 @@ class Events(Cog):
                 embed = msg.embeds[0]
             if (
                     (not embed.title == "Aperçu des matchs - Faille de l'invocateur Draft de tournoi")
-                    and (not embed.description == "Une game a été trouvée! Game was found! Il est temps de cliquer sur prêt!")
+                    and (not embed.description == "Une game a été trouvée! Il est temps de cliquer sur prêt!")
                     and (
                     not embed.description
                         == "Les joueurs mentionnés on été supprimé de la file car ils n'étaient pas prêt à temps."
@@ -300,7 +300,7 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_ready(self):
-        print("*********\nLe bot est prêt.\n*********")
+        print("*********\nLe bot est pret.\n*********")
         await self.setuptable(self.bot)
         await self.bot.change_presence(activity=Game(name="Custom games"))
 
@@ -376,17 +376,17 @@ class Events(Cog):
                     not embed.title in ["Aperçu des matchs - Faille de l'invocateur Draft de tournoi", "Match Overview - Valorant Competitive",
                                         "Match Overview - Overwatch Competitive", "Match Overview", "1v1 Test Mode"])
                     and (
-                    not embed.description == "Une game a été trouvée! Game was found! Il est temps de cliquer sur prêt!"
+                    not embed.description == "Une game a été trouvée! Il est temps de cliquer sur prêt!"
             )
                     and (
                     not embed.description
                         == "Les joueurs mentionnés on été supprimé de la file car ils n'étaient pas prêt à temps."
             )
                     and (
-                    not embed.title == ":warning: NOTICE"
+                    not embed.title == ":warning: ATTENTION"
             )
                     and (
-                    not "Impossible d'enregistrer la game" in embed.description
+                    not "Impossible d'enregistrer la partie" in embed.description
             )
                     and (
                     not "a été défini avec succès comme salon de file." in embed.description
