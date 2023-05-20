@@ -17,7 +17,7 @@ async def leaderboard_persistent(bot, channel, game):
         user_data = sorted(list(user_data), key=lambda x: x[2], reverse=True)
         # user_data = sorted(list(user_data), key=lambda x: float(x[2]) - (2 * float(x[3])), reverse=True)
 
-    embed = Embed(title=f"🏆 Leaderboard", color=Color.yellow())
+    embed = Embed(title=f"🏆 Classement", color=Color.yellow())
     if channel.guild.icon:
         embed.set_thumbnail(url=channel.guild.icon.url)
 
@@ -92,7 +92,7 @@ async def leaderboard_persistent(bot, channel, game):
         if member:
             member_name = member.name
         else:
-            member_name = "Unknown Member"
+            member_name = "Membre inconnu"
 
         embed.add_field(
             name=name,
@@ -101,7 +101,7 @@ async def leaderboard_persistent(bot, channel, game):
         )
 
     if not user_data:
-        embed.description = "No records to display yet."
+        embed.description = "Il n'y a pas de classement actuellement."
     for i, data in enumerate(user_data):
 
         if i <= 9:
@@ -131,7 +131,7 @@ class Admin(Cog):
                 return True
         
         await ctx.send(
-            embed=error("You need **administrator** permissions to use this command.")
+            embed=error("Vous avez besoin de la permission d'**administrateur** pour utiliser cette commande.")
         )
         return False
 
@@ -149,7 +149,7 @@ class Admin(Cog):
                 return True
 
         await inter.send(
-            embed=error("You need **administrator** permissions to use this command.")
+            embed=error("Vous avez besoin de la permission d'**administrateur** pour utiliser cette commande.")
         )
         return False
 
@@ -174,7 +174,7 @@ class Admin(Cog):
                     f"DELETE FROM ready_ups WHERE game_id = '{entry[3]}'",
                 )
 
-        await ctx.send(embed=success(f"{member.mention} was removed from all active queues. They may still show up in queue embed."))
+        await ctx.send(embed=success(f"{member.mention} a été retiré de toutes les files actuellement en cours. Il peu toujours apparaître dans la file."))
 
     @admin.command()
     async def winner(self, ctx, role: Role):
@@ -190,13 +190,13 @@ class Admin(Cog):
             else:
                 team = "blue"
 
-            await ctx.send(embed=success(f"Game **{game_id}** was concluded."))
+            await ctx.send(embed=success(f"La partie **{game_id}** est terminée."))
 
             channel = self.bot.get_channel(game_data[1])
             await Win.process_win(self, channel, ctx.author, True, team)
 
         else:
-            await ctx.send(embed=error("Game was not found."))
+            await ctx.send(embed=error("La partie n'a pas été trouvée."))
 
     @admin.command()
     async def change_winner(self, ctx, game_id: str, team: str):
@@ -299,14 +299,14 @@ class Admin(Cog):
 
         if wrong_voters:
             wrong_voters_embed = Embed(
-                title="Wrong Voters",
-                description="These player(s) purposely voted for the wrong winning team.\n" + "\n".join(f"{i+1}. <@{x}>" for i, x in enumerate(wrong_voters)),
+                title="Mauvais votants",
+                description="Ces joueurs ont délibérément voté pour la mauvaise équipe gagnante..\n" + "\n".join(f"{i+1}. <@{x}>" for i, x in enumerate(wrong_voters)),
                 color=Color.yellow()
             )
         
-            await ctx.send(embeds=[success("Game winner was changed."), wrong_voters_embed])
+            await ctx.send(embeds=[success("Les gagnants ont bien été changé."), wrong_voters_embed])
         else:
-            await ctx.send(embed=success("Game winner was changed."))
+            await ctx.send(embed=success("Les gagnants ont bien été changé."))
         
         log_channel_id = await self.bot.fetchrow(
             f"SELECT * FROM winner_log_channel WHERE guild_id = {ctx.guild.id} and game = '{member_entry[8]}'"
@@ -324,8 +324,8 @@ class Admin(Cog):
                 )
 
                 embed = Embed(
-                    title=f"Game results changed!",
-                    description=f"Game **{game_id}**'s results were changed!\n\nResult: **{team.capitalize()} Team Won!**",
+                    title=f"Les résultats sont bien changé!",
+                    description=f"Les résultats de la partie **{game_id}** ont bien été changés!\n\nRésultat: **L'équipe {team.capitalize()} a gagné!**",
                     color=Color.blurple(),
                 )
                 await log_channel.send(mentions, embed=embed)
@@ -334,7 +334,7 @@ class Admin(Cog):
     async def void(self, ctx, game_id):
         game_data = await self.bot.fetchrow(f"SELECT * FROM games WHERE game_id = '{game_id}'")
         if not game_data:
-            return await ctx.send(embed=error("Game not found."))
+            return await ctx.send(embed=error("La partie n'a pas été trouvée."))
         
         await self.bot.execute(f"DELETE FROM games WHERE game_id = '{game_id}'")
         await self.bot.execute(f"DELETE FROM game_member_data WHERE game_id = '{game_id}'")
@@ -400,12 +400,12 @@ class Admin(Cog):
             )
 
             await ctx.send(
-                embed=success(f"Game **{game_id}** was successfully cancelled.")
+                embed=success(f"La partie **{game_id}** a été correctement annulée.")
             )
 
         else:
             await ctx.send(
-                embed=error(f"{member.mention} is not a part of any ongoing games.")
+                embed=error(f"{member.mention} n'est pas une partie en cours.")
             )
 
     @admin.group()
@@ -416,11 +416,11 @@ class Admin(Cog):
     async def leaderboard(self, ctx):
         data = await self.bot.fetch(f"SELECT * FROM points WHERE guild_id = {ctx.guild.id} ")
         if not data:
-            return await ctx.send(embed=error("There are no records to be deleted"))
+            return await ctx.send(embed=error("Il n'y a pas de données à supprimer"))
         
         view = ConfirmationButtons(ctx.author.id)
         await ctx.send(
-            "This will reset all member's wins, losses, MMR and MVP votes back to 0. Are you sure?",
+            "Cela va remettre à zero toutes les victoires,défaites, le MMR et les votes MVP des joueurs. Êtes vous sûr?",
             view=view
         )
         await view.wait()
@@ -428,15 +428,15 @@ class Admin(Cog):
             await self.bot.execute(f"UPDATE mvp_points SET votes = 0 WHERE guild_id = {ctx.guild.id}")
             await self.bot.execute(f"UPDATE points SET wins = 0, losses = 0 WHERE guild_id = {ctx.guild.id}")
             await self.bot.execute(f"UPDATE mmr_rating SET counter = 0, mu = 25.0, sigma = 8.33333333333333 WHERE guild_id = {ctx.guild.id}")
-            await ctx.send(embed=success("Successfully reset all wins, mmr and mvp votes"))
+            await ctx.send(embed=success("Tout a bien été remis à 0"))
         else:
-            await ctx.send(embed=success("Process aborted."))
+            await ctx.send(embed=success("La procédure a été interrompue."))
     
     @reset.command()
     async def queue(self, ctx, game_id):
         game_data = await self.bot.fetchrow(f"SELECT * FROM games WHERE game_id = '{game_id}'")
         if game_data:
-            return await ctx.send(embed=error("You cannot reset an ongoing game. To cancel an ongoing game, please use `/admin cancel [member]`"))
+            return await ctx.send(embed=error("Vous ne pouvez pas remettre à 0 une partie en cours. Pour arrêter la game en cours, utilisez `/admin cancel [member]`"))
 
         member_data = await self.bot.fetchrow(
             "SELECT * FROM game_member_data WHERE game_id = ?", game_id
@@ -555,7 +555,7 @@ class Admin(Cog):
     @admin_slash.sub_command(name="user_dequeue")
     async def user_dequeue_slash(self, ctx, member: Member):
         """
-        Remove a user from all queues. Rejoin the queue to refresh the Embed.
+        Supprime un joueur de toutes les files. Rejoindre une file permet de rafraichir le message.
         """
         await self.user_dequeue(ctx, member)
 
@@ -584,33 +584,33 @@ class Admin(Cog):
         team=Param(choices=[OptionChoice("Red", "red"), OptionChoice("Blue", "blue")]),
     ):
         """
-        Change the winner of a finished game.
+        Change le gagnant d'une partie terminée.
         """
         await self.change_winner(ctx, game_id, team)
 
     @admin_slash.sub_command(name="winner")
     async def winner_slash(self, ctx, role: Role):
         """
-        Announce the winner of a game. Skips voting. The game must be in progress.
+        Annonce le gagnant d'une partie. Passe les votes. La game doit être en cours.
         """
         await self.winner(ctx, role)
 
     @admin_slash.sub_command(name="cancel")
     async def cancel_slash(self, ctx, member: Member):
         """
-        Cancel the member's game.
+        Annule la partie d'un joueur.
         """
         await self.cancel(ctx, member)
 
     @admin_slash.sub_command(name="top_ten")
     async def leaderboard_persistent_slash(self, ctx, channel: TextChannel, game = Param(choices={"League Of Legends": "lol", "Valorant": "valorant", "Overwatch": "overwatch", "Other": "other"})):
         """
-        Create a Dynamic Top 10 leaderboard
+        Créer un classement dynamique avec les 10 meilleurs joueurs
         """
         embed = await leaderboard_persistent(self.bot, channel, game)
         msg = await channel.send(embed=embed)
         if not msg:
-            return await ctx.send(embed=error("There are no records to display in the leaderboard, try playing a match first."))
+            return await ctx.send(embed=error("Il n'y a pas de données à afficher dans le classement, essayez de faire un premier match."))
         data = await self.bot.fetchrow(f"SELECT * FROM persistent_lb WHERE guild_id = {ctx.guild.id} and game = '{game}'")
         if data:
             await self.bot.execute(
@@ -629,7 +629,7 @@ class Admin(Cog):
                 game
             )
         
-        await ctx.send(embed=success("Persistent leaderboard activated successfully."))
+        await ctx.send(embed=success("Le classement perssistant a été activé correctement."))
 
     
     @admin_slash.sub_command(name="void")
@@ -830,14 +830,14 @@ class Admin(Cog):
     @admin_slash.sub_command()
     async def update_ign(self, ctx, ign, member: Member, game=Param(choices={"League Of Legends": "lol", "Valorant": "valorant", "Overwatch": "overwatch", "Other": "other"})):
         """
-        Update In game name of a player
+        Met à jour le nom en jeux d'un joueur.
         """
         data = await self.bot.fetchrow(f"SELECT * FROM igns WHERE game = '{game}' and user_id = {member.id} and guild_id = {ctx.guild.id}")
         if data:
             await self.bot.execute(f"UPDATE igns SET ign = ? WHERE guild_id = ? and user_id = ? and game = ?", ign, ctx.guild.id, member.id, game)
         else:
             await self.bot.execute(f"INSERT INTO igns(guild_id, user_id, game, ign) VALUES(?,?,?,?)", ctx.guild.id, member.id, game, ign)
-        await ctx.send(embed=success("IGN updated successfully."))
+        await ctx.send(embed=success("Le nom en jeu a été modifié correctement."))
 
     @admin_slash.sub_command_group(name="reset")
     async def reset_slash(self, ctx):
@@ -853,7 +853,7 @@ class Admin(Cog):
     @reset_slash.sub_command(name="queue")
     async def queue_slash(self, ctx, game_id: str):
         """
-        Remove everyone from a queue. Rejoin the queue to refresh the Embed.
+        Retire toutes les personnes d'une file. Rejoignez une file pour mettre à jour le message.
         """
         await self.queue(ctx, game_id)
 

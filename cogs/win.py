@@ -14,11 +14,11 @@ class WinButtons(ui.View):
     
     async def check_end(self, inter, game_data, *args):
         async def declare_winner(winner):
-            await inter.send(f"{winner} Team was declared winner!")
+            await inter.send(f"{winner} a été déclaré comme l'équipe gagnante!")
 
             queuechannel = self.bot.get_channel(game_data[6])
             msg = await queuechannel.fetch_message(game_data[7])
-            await msg.edit(content=f"{winner} Team was declared winner!", view=None)
+            await msg.edit(content=f"{winner} a été déclaré comme l'équipe gagnante!", view=None)
 
             for category in inter.guild.categories:
                 if category.name == f"Game: {game_data[0]}":
@@ -113,12 +113,12 @@ class WinButtons(ui.View):
                     else:
                         losing_team_str += f"• {self.bot.role_emojis[member_entry[1]]} <@{member_entry[0]}> \n"
             embed = Embed(
-                title=f"Game concluded!",
-                description=f"Game **{game_data[0]}** was concluded!",
+                title=f"Partie terminée!",
+                description=f"La partie **{game_data[0]}** est terminée!",
                 color=Color.blurple(),
             )
-            embed.add_field(name="Winning Team", value=winning_team_str)
-            embed.add_field(name="Losing Team", value=losing_team_str)
+            embed.add_field(name="Equipe Victorieuse", value=winning_team_str)
+            embed.add_field(name="Equipe Perdante", value=losing_team_str)
 
             log_channel_id = await self.bot.fetchrow(
                 f"SELECT * FROM winner_log_channel WHERE guild_id = {inter.guild.id} and game = '{game_data[8]}'"
@@ -129,7 +129,7 @@ class WinButtons(ui.View):
                     try:
                         await log_channel.send(mentions, embed=embed)
                     except:
-                        await queuechannel.send(embed=error(f"Could not log the game {game_data[0]} in {log_channel.mention}. Please check my permissions."), delete_after=120.0)
+                        await queuechannel.send(embed=error(f"Impossible d'enregistrer la partie {game_data[0]} dans {log_channel.mention}. Vérifiez les permissions."), delete_after=120.0)
 
             await self.bot.execute(f"DELETE FROM games WHERE game_id = '{game_data[0]}'")
             await self.bot.execute(
@@ -159,8 +159,8 @@ class WinButtons(ui.View):
                 try:
                     await user.send(
                         embed=Embed(
-                            title=":trophy: Vote for MVP",
-                            description="Pick your MVP by responding with a number (1-10). \n"
+                            title=":trophy: Votez pour le MVP de la game",
+                            description="Choisissez votre MVP en répondant avec un nombre de 1 à 10. \n"
                                         + '\n'.join([f"**{i + 1}.** {self.bot.role_emojis[x[1]]} {'🔵' if x[2] == 'blue' else '🔴'} <@{x[0]}>" for i, x in enumerate(member_data)]),
                             color=Color.blurple()
                         )
@@ -267,11 +267,11 @@ class WinButtons(ui.View):
         
         embed = inter.message.embeds[1]
         embed.clear_fields()
-        embed.add_field(name="🔵 Blue Voters", value=value_blue)
-        embed.add_field(name="🔴 Red Voters", value=value_red)
+        embed.add_field(name="🔵 Votes pour l'équipe bleu", value=value_blue)
+        embed.add_field(name="🔴 Votes pour l'équipe rouge", value=value_red)
         await inter.edit_original_message(embeds=[inter.message.embeds[0], embed])
 
-    @ui.button(label="Blue Team", style=ButtonStyle.blurple, custom_id="win:blue")
+    @ui.button(label="Equipe Bleu", style=ButtonStyle.blurple, custom_id="win:blue")
     async def first_button(self, button, inter):
         await inter.response.defer()
         game_data = await self.bot.fetchrow(f"SELECT * FROM games WHERE game_id = '{self.game_id}'")
@@ -280,15 +280,15 @@ class WinButtons(ui.View):
         if inter.author.id not in self.red_votes:
             if inter.author.id not in self.blue_votes:
                 self.blue_votes.append(inter.author.id)
-                await inter.send(embed=success("You've succesfully voted for Blue Team."), ephemeral=True)
+                await inter.send(embed=success("Vous avez bien voté pour l'équipe bleu."), ephemeral=True)
             else:
-                await inter.send(embed=success("You've already voted for Blue Team."), ephemeral=True)
+                await inter.send(embed=success("Vous avez déjà voté pour l'équipe bleu."), ephemeral=True)
         else:
-            await inter.send(embed=error("You've already voted for Red Team."), ephemeral=True)
+            await inter.send(embed=error("Vous avez déjà voté pour l'équipe rouge."), ephemeral=True)
         await self.edit_embed(inter)
         await self.check_end(inter, game_data)
         
-    @ui.button(label="Red Team", style=ButtonStyle.red, custom_id="win:red")
+    @ui.button(label="Equipe rouge", style=ButtonStyle.red, custom_id="win:red")
     async def second_button(self, button, inter):
         await inter.response.defer()
         game_data = await self.bot.fetchrow(f"SELECT * FROM games WHERE game_id = '{self.game_id}'")
@@ -297,11 +297,11 @@ class WinButtons(ui.View):
         if inter.author.id not in self.blue_votes:
             if inter.author.id not in self.red_votes:
                 self.red_votes.append(inter.author.id)
-                await inter.send(embed=success("You've succesfully voted for Red Team."), ephemeral=True)
+                await inter.send(embed=success("Vous avez bien voté pour l'équipe rouge."), ephemeral=True)
             else:
-                await inter.send(embed=success("You've already voted for Red Team."), ephemeral=True)
+                await inter.send(embed=success("Vous avez déjà voté pour l'équipe rouge."), ephemeral=True)
         else:
-            await inter.send(embed=error("You've already voted for Blue Team."), ephemeral=True)
+            await inter.send(embed=error("Vous avez déjà voté pour l'équipe bleu."), ephemeral=True)
         await self.check_end(inter, game_data)
         await self.edit_embed(inter)
 
@@ -319,12 +319,12 @@ class Win(Cog):
             f"SELECT * FROM games WHERE lobby_id = {channel.id}"
         )
         if not game_data:
-            return await channel.send("No game was reserved for this channel.")
+            return await channel.send("Aucune partie n'a été reservé pour ce salon.")
 
         if not bypass:
             if channel.id in self.active_win_commands:
                 return await channel.send(
-                    "One win command is already active in this channel.", delete_after=5.0
+                    "Une commande de résultat a déjà été lancée.", delete_after=5.0
                 )
 
         member_data = await self.bot.fetch(
@@ -345,12 +345,12 @@ class Win(Cog):
             and not author.guild_permissions.administrator
         ):
             return await channel.send(
-                "Only game members or admins can run this command."
+                "Il n'y a que les admins ou les membres qui peuvent utiliser cette commande."
             )
 
         if not bypass:
-            embed1 = Embed(title="Wrong vote results?", description="In this case, **contact the admins immediately** and **do not play another game** until the results are fixed. Admins are required to run `/admin change_winner`.", color=Color.yellow())
-            embed2 = Embed(title="Vote for Winner!", description="Which team won?", color=Color.red())
+            embed1 = Embed(title="Un mauvais résultat?", description="Dans ce cas, **contactez les admins immédiatement** et **ne relancez pas une autre partie** jusqu'à ce que les résultats soient fixés. Les Admins doivent faire la commande `/admin change_winner`.", color=Color.yellow())
+            embed2 = Embed(title="Votez pour le Gagnant!", description="Quel équipe a gagné?", color=Color.red())
             await channel.send(embeds=[embed1, embed2], view=WinButtons(self.bot, game_data[0]))
                 
             # await msg.add_reaction("🔵")
@@ -367,7 +367,7 @@ class Win(Cog):
     @slash_command(name="win")
     async def win_slash(self, ctx):
         """
-        Start a vote to select the winning team.
+        Commence un vote pour sélectionner l'équipe gagnante.
         """
         await ctx.delete_original_message()
         await self.process_win(ctx.channel, ctx.author)

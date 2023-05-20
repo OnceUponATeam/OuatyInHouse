@@ -77,11 +77,11 @@ class Events(Cog):
             else:
                 embed = msg.embeds[0]
             if (
-                    (not embed.title == "Match Overview - SR Tournament Draft")
-                    and (not embed.description == "Game was found! Time to ready up!")
+                    (not embed.title == "Aperçu des matchs - Faille de l'invocateur Draft de tournoi")
+                    and (not embed.description == "Une game a été trouvée! Game was found! Il est temps de cliquer sur prêt!")
                     and (
                     not embed.description
-                        == "Mentioned players have been removed from the queue for not being ready on time."
+                        == "Les joueurs mentionnés on été supprimé de la file car ils n'étaient pas prêt à temps."
             )
             ):
                 try:
@@ -300,7 +300,7 @@ class Events(Cog):
 
     @Cog.listener()
     async def on_ready(self):
-        print("*********\nBot is Ready.\n*********")
+        print("*********\nLe bot est prêt.\n*********")
         await self.setuptable(self.bot)
         await self.bot.change_presence(activity=Game(name="Custom games"))
 
@@ -373,23 +373,23 @@ class Events(Cog):
                     embed.title = ""
             if (
                     (
-                    not embed.title in ["Match Overview - SR Tournament Draft", "Match Overview - Valorant Competitive",
+                    not embed.title in ["Aperçu des matchs - Faille de l'invocateur Draft de tournoi", "Match Overview - Valorant Competitive",
                                         "Match Overview - Overwatch Competitive", "Match Overview", "1v1 Test Mode"])
                     and (
-                    not embed.description == "Game was found! Time to ready up!"
+                    not embed.description == "Une game a été trouvée! Game was found! Il est temps de cliquer sur prêt!"
             )
                     and (
                     not embed.description
-                        == "Mentioned players have been removed from the queue for not being ready on time."
+                        == "Les joueurs mentionnés on été supprimé de la file car ils n'étaient pas prêt à temps."
             )
                     and (
                     not embed.title == ":warning: NOTICE"
             )
                     and (
-                    not "Could not log the game" in embed.description
+                    not "Impossible d'enregistrer la game" in embed.description
             )
                     and (
-                    not "was successfully set as queue channel." in embed.description
+                    not "a été défini avec succès comme salon de file." in embed.description
             )
             ):
                 try:
@@ -407,12 +407,12 @@ class Events(Cog):
             if msg.author.id == entry[1]:
                 if msg.content.isnumeric():
                     if int(msg.content) > 10:
-                        return await msg.channel.send(embed=embeds.error("There are only 10 summoners to vote."))
+                        return await msg.channel.send(embed=embeds.error("Il n'y a que 10 invocateurs pour qui voter."))
                     all_members = await self.bot.fetch(f"SELECT * FROM members_history WHERE game_id = '{entry[2]}'")
                     for i, member in enumerate(all_members):
                         if i + 1 == int(msg.content):
                             if member[0] == msg.author.id:
-                                return await msg.channel.send(embed=embeds.error("You cannot vote for yourself."))
+                                return await msg.channel.send(embed=embeds.error("Vous ne pouvez pas voter pour vous même, mais bien essayé quand même."))
                             mvp_data = await self.bot.fetchrow(
                                 f"SELECT * FROM mvp_points WHERE user_id = {member[0]} and game = '{member[8]}'")
                             if mvp_data:
@@ -431,7 +431,7 @@ class Events(Cog):
                             await self.bot.execute(
                                 f"DELETE FROM mvp_voting WHERE user_id = {msg.author.id} and guild_id = {entry[0]}"
                             )
-                            await msg.channel.send(embed=embeds.success("Thank you for voting."))
+                            await msg.channel.send(embed=embeds.success("Merci pour votre vote."))
 
     @Cog.listener('on_raw_member_remove')
     async def clear_member_entries(self, payload):

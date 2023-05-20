@@ -21,9 +21,8 @@ class Match(Cog):
                 try:
                     await channel.send(
                         embed=Embed(
-                            title=":warning: NOTICE",
-                            description="The Bot has been updated for maintenance. Queues **before** this message are now invalid. Please use the queue below this message. \n"
-                                        "Join our [Support Server](https://discord.com/invite/NDKMeT6GE7) for the patch notes. Overwatch, Valorant and any other 5v5 game is now supported!",
+                            title=":warning: ATTENTION",
+                            description="Le bot a été mis à jour pour maintenance. Les files **avant** ce message sont maintenant invalides. Veuillez utiliser la file située en dessous de ce message.",
                             color=Color.yellow()
                         )
                     )
@@ -39,13 +38,13 @@ class Match(Cog):
     @slash_command(name="start")
     async def start_slash(self, ctx):
         """
-        Start a InHouse queue.
+        Démarrer une nouvelle file.
         """
         game_check = await self.bot.fetchrow(f"SELECT * FROM queuechannels WHERE channel_id = {ctx.channel.id}")
         if not game_check:
-            return await ctx.send(embed=error("This channel is not a queue channel."))
+            return await ctx.send(embed=error("Ce salon n'est pas un salon permettant de créer une file."))
         try:
-            await ctx.send("Game was started!")
+            await ctx.send("La game a commencée!")
         except:
             pass
         await start_queue(self.bot, ctx.channel, game_check[2], ctx.author)

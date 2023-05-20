@@ -7,7 +7,7 @@ from core.embeds import error
 
 class Leaderboard(Cog):
     """
-    ⏫;Leaderboard
+    ⏫;Classement
     """
 
     def __init__(self, bot):
@@ -15,7 +15,7 @@ class Leaderboard(Cog):
 
     async def leaderboard(self, ctx, game, type="mmr"):
         if not type.lower() in ['mmr', 'mvp']:
-            return await ctx.send(embed=error("Leaderboard type can either be `mmr` or `mvp`."))
+            return await ctx.send(embed=error("Le type de classement peut être `mmr` ou `mvp`."))
 
         if type == 'mmr':
             st_pref = await self.bot.fetchrow(f"SELECT * FROM switch_team_preference WHERE guild_id = {ctx.guild.id}")
@@ -38,9 +38,9 @@ class Leaderboard(Cog):
             user_data = sorted(list(user_data), key=lambda x: x[2], reverse=True)
 
         if not user_data:
-            return await ctx.send(embed=error("No entries to present."))
+            return await ctx.send(embed=error("Aucune donnée pour l'instant."))
 
-        embed = Embed(title=f"🏆 Leaderboard", color=Color.blurple())
+        embed = Embed(title=f"🏆 Classement", color=Color.blurple())
         if ctx.guild.icon:
             embed.set_thumbnail(url=ctx.guild.icon.url)
 
@@ -118,7 +118,7 @@ class Leaderboard(Cog):
             if member:
                 member_name = member.name
             else:
-                member_name = "Unknown Member"
+                member_name = "Joueur inconnu"
 
             if type == 'mvp':
                 
@@ -172,7 +172,7 @@ class Leaderboard(Cog):
     @slash_command()
     async def leaderboard_lol(self, ctx, type=Param(default="mmr", choices=[OptionChoice("MVP", "mvp"), OptionChoice("MMR", "mmr")])):
         """
-        View the leaderboard for League of Legends.
+        Voir le classement pour League of Legends.
         """
         await self.leaderboard(ctx, 'lol', type)
     
@@ -215,7 +215,7 @@ class Leaderboard(Cog):
 
     async def rank(self, ctx, game, type):
         if type.lower() not in ['mvp', 'mmr']:
-            return await ctx.send(embed=error("Rank type can either be `mmr` or `mvp`."))
+            return await ctx.send(embed=error("Le type de rang peut être `mmr` ou `mvp`."))
 
         if type == 'mmr':
             user_data = await self.bot.fetch(
@@ -229,17 +229,17 @@ class Leaderboard(Cog):
             user_data = sorted(list(user_data), key=lambda x: x[2], reverse=True)
 
         if not user_data:
-            return await ctx.send(embed=error(f"No entries to present {type} rank from."))
+            return await ctx.send(embed=error(f"Aucune donnée à présenter pour le classement par {type}."))
         
         if ctx.author.id not in [x[1] for x in user_data]:
-            return await ctx.send(embed=error("You have not played a game yet, or have not received any MVP votes."))
+            return await ctx.send(embed=error("Vous n'avez pas encore joué de game ou n'avez pas encore reçu de votes MVP."))
         
         ign = await self.bot.fetchrow(f"SELECT ign FROM igns WHERE guild_id = {ctx.guild.id} and user_id = {ctx.author.id} and game = '{game}'")
         if ign:
             display_name = ign[0]
         else:
             display_name = ctx.author.name
-        embed = Embed(title=f"⏫ Rank of {display_name}", color=ctx.author.color)
+        embed = Embed(title=f"⏫ Classement de {display_name}", color=ctx.author.color)
         if ctx.author.avatar:
             embed.set_thumbnail(url=ctx.author.avatar.url)
         async def add_field(data) -> None:
@@ -259,7 +259,7 @@ class Leaderboard(Cog):
             if type == 'mvp':
                 embed.add_field(
                     name=f"#{i+1}",
-                    value=f"<@{data[1]}> - **{wins}** Wins - **{percentage}%** WR - **{data[2]}x** MVP",
+                    value=f"<@{data[1]}> - **{wins}** Victoire - **{percentage}%** WR - **{data[2]}x** MVP",
                     inline=False,
                 )
             else:
@@ -267,11 +267,11 @@ class Leaderboard(Cog):
                 if data[4] >= 10:
                     display_mmr = f"**{int(skill*100)}** MMR"
                 else:
-                    display_mmr = f"**{data[4]}/10** Games Played"
+                    display_mmr = f"**{data[4]}/10** Games Jouées"
                 
                 embed.add_field(
                     name=f"#{i + 1}",
-                    value=f"<@{data[1]}> - **{wins}** Wins - **{percentage}%** WR - {display_mmr}",
+                    value=f"<@{data[1]}> - **{wins}** Victoire - **{percentage}%** WR - {display_mmr}",
                     inline=False,
                 )
 
@@ -284,7 +284,7 @@ class Leaderboard(Cog):
     @slash_command()
     async def rank_lol(self, ctx, type = Param(choices=[OptionChoice('MMR', 'mmr'), OptionChoice('MVP', 'mvp')])):
         """
-        Check your rank for League Of Legends.
+        Vérifiez votre classement pour League Of Legends.
         """
         await self.rank(ctx, 'lol', type)
 

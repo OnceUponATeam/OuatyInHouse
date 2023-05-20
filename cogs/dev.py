@@ -21,13 +21,13 @@ class Dev(Cog):
 
     async def cog_check(self, ctx) -> bool:
         if not ctx.author.id in self.devs:
-            await ctx.send(embed=error("You cannot use this command."))
+            await ctx.send(embed=error("Vous ne pouvez pas utiliser cette commande."))
             return False
         return True
 
     async def cog_slash_command_check(self, inter) -> bool:
         if not inter.author.id in self.devs:
-            await inter.send(embed=error("You cannot use this command."))
+            await inter.send(embed=error("Vous ne pouvez pas utiliser cette commande."))
             return False
         return True
 
@@ -42,11 +42,11 @@ class Dev(Cog):
     @dev_slash.sub_command(name="status")
     async def dev_status(self, ctx, status):
         """
-        Change status of the bot.
+        Changer le status du bot.
         """
 
         await self.bot.change_presence(activity=Game(name=status))
-        await ctx.send(embed=success("Status changed successfully."))
+        await ctx.send(embed=success("Le status a été changé correctement."))
 
     @dev.command()
     async def status(self, ctx, status):
