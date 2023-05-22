@@ -208,13 +208,13 @@ class Admin(Cog):
             f"SELECT * FROM members_history WHERE game_id = '{game_id}'"
         )
         if not member_data:
-            return await ctx.send(embed=error(f"Game **{game_id}** was not found."))
+            return await ctx.send(embed=error(f"La partie **{game_id}** n'a pas été trouvée."))
 
         for member in member_data:
             if member[3] == "won":
                 if member[2] == team.lower():
                     return await ctx.send(
-                        embed=error(f"{team.capitalize()} is already the winner.")
+                        embed=error(f"{team.capitalize()} est déjà l'équipe gagnante.")
                     )
 
         wrong_voters = []
@@ -360,9 +360,9 @@ class Admin(Cog):
             lobby = self.bot.get_channel(game_data[1])
             await lobby.delete()
         except:
-            await ctx.send(embed=error("Unable to delete game channels and roles, please remove them manually."))
+            await ctx.send(embed=error("Impossible de retirer les canaux et roles de la partie, merci de les retirer manuellement."))
 
-        await ctx.send(embed=success(f"All records for Game **{game_id}** were deleted."))
+        await ctx.send(embed=success(f"Toutes les données de la partie **{game_id}** ont été supprimées."))
 
     @admin.command()
     async def cancel(self, ctx, member: Member):
@@ -420,7 +420,7 @@ class Admin(Cog):
         
         view = ConfirmationButtons(ctx.author.id)
         await ctx.send(
-            "Cela va remettre à zero toutes les victoires,défaites, le MMR et les votes MVP des joueurs. Êtes vous sûr?",
+            "Cela va remettre à zéro toutes les victoires, défaites, le MMR et les votes MVP des joueurs. Êtes-vous sûr?",
             view=view
         )
         await view.wait()
@@ -436,7 +436,7 @@ class Admin(Cog):
     async def queue(self, ctx, game_id):
         game_data = await self.bot.fetchrow(f"SELECT * FROM games WHERE game_id = '{game_id}'")
         if game_data:
-            return await ctx.send(embed=error("Vous ne pouvez pas remettre à 0 une partie en cours. Pour arrêter la game en cours, utilisez `/admin cancel [member]`"))
+            return await ctx.send(embed=error("Vous ne pouvez pas remettre à 0 une partie en cours. Pour arrêter la parite en cours, utilisez `/admin cancel [member]`"))
 
         member_data = await self.bot.fetchrow(
             "SELECT * FROM game_member_data WHERE game_id = ?", game_id
@@ -445,19 +445,19 @@ class Admin(Cog):
             await self.bot.execute(
                 "DELETE FROM game_member_data WHERE game_id = ? ", game_id
             )
-            await ctx.send(embed=success(f"Game **{game_id}** queue was refreshed."))
+            await ctx.send(embed=success(f"La file pour la partie **{game_id}** a été actualisée."))
         else:
-            await ctx.send(embed=error(f"Game **{game_id}** was not found."))
+            await ctx.send(embed=error(f"La partie **{game_id}** n'a pas été trouvée."))
     
     @reset.command()
     async def user(self, ctx, member: Member):
         data = await self.bot.fetch(f"SELECT * FROM points WHERE guild_id = {ctx.guild.id} and user_id = {member.id}")
         if not data:
-            return await ctx.send(embed=error("There are no records to be deleted"))
+            return await ctx.send(embed=error("Il n'y a pas de données à supprimer"))
         
         view = ConfirmationButtons(ctx.author.id)
         await ctx.send(
-            f"This will reset all {member.display_name}'s wins, losses, MMR and MVP votes back to 0. Are you sure?",
+            f"Cela va remettre à zéro toutes les victoires, défaites, le MMR et les votes MVP de {member.display_name}. Êtes-vous sür ?",
             view=view
         )
         await view.wait()
@@ -465,9 +465,9 @@ class Admin(Cog):
             await self.bot.execute(f"UPDATE mvp_points SET votes = 0 WHERE guild_id = {ctx.guild.id} and user_id = {member.id}")
             await self.bot.execute(f"UPDATE points SET wins = 0, losses = 0 WHERE guild_id = {ctx.guild.id} and user_id = {member.id}")
             await self.bot.execute(f"UPDATE mmr_rating SET counter = 0, mu = 25.0, sigma = 8.33333333333333 WHERE guild_id = {ctx.guild.id} and user_id = {member.id}")
-            await ctx.send(embed=success(f"Successfully reset all wins, mmr and mvp votes of {member.display_name}"))
+            await ctx.send(embed=success(f"Toutes les victoires, défaites, le MMR et les votes MVP de {member.display_name} ont été remis à zéro avec succès"))
         else:
-            await ctx.send(embed=success("Process aborted."))
+            await ctx.send(embed=success("La procédure a été interrompue."))
 
     # SLASH COMMANDS
 
