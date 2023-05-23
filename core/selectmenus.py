@@ -12,7 +12,7 @@ class SelectMenu(ui.Select):
     async def callback(self, inter):
         if inter.author.id != self.author:
             return await inter.send(
-                "You cannot interact with this menu.", ephemeral=True
+                "Vous ne pouvez pas interagir avec ce menu.", ephemeral=True
             )
         await inter.response.defer()
         await self.function(inter, self.values, *self.args)

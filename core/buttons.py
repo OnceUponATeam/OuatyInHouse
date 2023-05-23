@@ -11,7 +11,7 @@ class ConfirmationButtons(ui.View):
     async def first_button(self, button, inter):
         if inter.author.id != self.authorid:
             return await inter.send(
-                "You cannot interact with these buttons.", ephemeral=True
+                "Vous ne pouvez pas interagir avec ces boutons.", ephemeral=True
             )
         self.value = False
         for button in self.children:
@@ -23,7 +23,7 @@ class ConfirmationButtons(ui.View):
     async def second_button(self, button, inter):
         if inter.author.id != self.authorid:
             return await inter.send(
-                "You cannot interact with these buttons.", ephemeral=True
+                "Vous ne pouvez pas interagir avec ces boutons.", ephemeral=True
             )
         self.value = True
         for button in self.children:
