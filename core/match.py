@@ -75,7 +75,7 @@ async def start_queue(bot, channel, game, author=None, existing_msg = None, game
 
     def banner_icon(game):
         if game == "lol":
-            return "https://cdn.discordapp.com/attachments/328696263568654337/1068133100451803197/image.png"
+            return "https://cdn.discordapp.com/attachments/880913866719117412/1111770498049777705/banner.png"
         elif game == "valorant":
             return "https://media.discordapp.net/attachments/1046664511324692520/1077958380964036689/image.png"
         elif game == "overwatch":
