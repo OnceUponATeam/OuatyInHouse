@@ -1287,7 +1287,7 @@ class Queue(ui.View):
             name = f"{emoji} {team.capitalize()}"
             st_pref = await self.bot.fetchrow(f"SELECT * FROM switch_team_preference WHERE guild_id = {msg.guild.id}")
             if not st_pref:
-                name = f"Slot {index+1}"
+                name = f"Groupe {index+1}"
             
             if team_data:
                 duos = await self.bot.fetch(f"SELECT * FROM duo_queue WHERE game_id = '{game_id}'")
