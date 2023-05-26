@@ -331,7 +331,7 @@ class Events(Cog):
 
             e = Embed(
                 title="Exception!",
-                description=f"Guild: {ctx.guild.name}\nGuildID: {ctx.guild.id}\nUser: {ctx.author}\nUserID: {ctx.author.id}\n\nError: {error}\nCommand: {command}",
+                description=f"Serveur: {ctx.guild.name}\nServeurID: {ctx.guild.id}\nUtilisateur: {ctx.author}\nUtilisateurID: {ctx.author.id}\n\nErreur: {error}\nCommande: {command}",
                 color=Color.blurple(),
             )
             etype = type(error)

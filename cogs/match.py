@@ -44,7 +44,7 @@ class Match(Cog):
         if not game_check:
             return await ctx.send(embed=error("Ce salon n'est pas un salon permettant de créer une file."))
         try:
-            await ctx.send("La game a commencée!")
+            await ctx.send("La partie a commencée!")
         except:
             pass
         await start_queue(self.bot, ctx.channel, game_check[2], ctx.author)

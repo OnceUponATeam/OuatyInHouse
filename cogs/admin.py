@@ -342,7 +342,7 @@ class Admin(Cog):
 
         try:
             for category in ctx.guild.categories:
-                if category.name == f"Game: {game_data[0]}":
+                if category.name == f"Partie:  {game_data[0]}":
                     await category.delete()
 
             red_channel = self.bot.get_channel(game_data[2])
@@ -376,7 +376,7 @@ class Admin(Cog):
             )
 
             for category in ctx.guild.categories:
-                if category.name == f"Game: {game_data[0]}":
+                if category.name == f"Partie:  {game_data[0]}":
                     await category.delete()
 
             red_channel = self.bot.get_channel(game_data[2])

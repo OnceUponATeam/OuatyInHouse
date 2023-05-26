@@ -21,7 +21,7 @@ class WinButtons(ui.View):
             await msg.edit(content=f"{winner} a été déclaré comme l'équipe gagnante!", view=None)
 
             for category in inter.guild.categories:
-                if category.name == f"Game: {game_data[0]}":
+                if category.name == f"Partie:  {game_data[0]}":
                     await category.delete()
 
             red_channel = self.bot.get_channel(game_data[2])
@@ -345,7 +345,7 @@ class Win(Cog):
             and not author.guild_permissions.administrator
         ):
             return await channel.send(
-                "Il n'y a que les admins ou les membres qui peuvent utiliser cette commande."
+                "Il n'y a que les admins ou les membres de la partie qui peuvent utiliser cette commande."
             )
 
         if not bypass:

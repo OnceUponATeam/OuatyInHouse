@@ -28,11 +28,11 @@ class Help(Cog):
 
     async def help_menu(self, ctx):
         main = Embed(
-            title="📔 Help Menu",
-            description=f"\n **Useful Links**\n"
-                        f"\n 🌐 [All commands](https://www.inhousequeue.xyz/commands)"
-                        f"\n 🔗 [Set-Up Guide](https://docs.inhousequeue.xyz/documentation/quick-start)"
-                        f"\n 📹 [Video Set-Up Guide](https://youtu.be/OwcyRsqwfro)"
+            title="📔 Menu d'aide",
+            description=f"\n **Liens utiles**\n"
+                        f"\n 🌐 [Toutes les commandes](https://www.inhousequeue.xyz/commands)"
+                        f"\n 🔗 [Guide de configuration](https://docs.inhousequeue.xyz/documentation/quick-start)"
+                        f"\n 📹 [Guide de configuration vidéo](https://youtu.be/OwcyRsqwfro)"
                         f"\n 🚑 [Support Discord](https://discord.com/invite/NDKMeT6GE7)"
                         f"\n 🤖 [Discord Bot List](https://top.gg/bot/1001168331996409856)"
                         f"\n 📶 {round(self.bot.latency * 1000)}ms"
@@ -41,7 +41,7 @@ class Help(Cog):
         )
 
         embeds = [main]
-        labels = ["Home"]
+        labels = ["Accueil"]
         emojis = ["🏠"]
         for command in self.bot.slash_commands:
             if command.cog.qualified_name in ["Help", "Events", "Dev"]:
@@ -74,7 +74,7 @@ class Help(Cog):
             embed=embeds[0], view=DynamicButtons(self.bot, ctx, labels, emojis, embeds)
         )
 
-    @slash_command(name="help", description="See all available features.")
+    @slash_command(name="help", description="Voir toutes les fonctionnalités disponibles.")
     async def help_slash(self, ctx):
         await self.help_menu(ctx)
 

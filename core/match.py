@@ -1129,7 +1129,7 @@ class ReadyButton(ui.Button):
                         game_category = self.bot.get_channel(game_category_id[1])
                     else:
                         game_category = await inter.guild.create_category(
-                            name=f"Game: {self.game_id}", overwrites=mutual_overwrites
+                            name=f"Partie:  {self.game_id}", overwrites=mutual_overwrites
                         )
                     game_lobby = await game_category.create_text_channel(
                         f"Lobby: {self.game_id}", overwrites=mutual_overwrites

@@ -19,7 +19,7 @@ class ChannelCommands(Cog):
 
         await inter.send(
             embed=embeds.error(
-                "Vous avez besoin d'avoir les permissions d'**administrateur** pour faire appel à cette commande."
+                "Vous avez besoin d'avoir les permissions d'**administrateurs** pour faire appel à cette commande."
             )
         )
         return False
@@ -32,7 +32,7 @@ class ChannelCommands(Cog):
 
         await ctx.send(
             embed=embeds.error(
-                "Vous avez besoin d'avoir les permissions d'**administrateur** pour faire appel à cette commande."
+                "Vous avez besoin d'avoir les permissions d'**administrateurs** pour faire appel à cette commande."
             )
         )
         return False

@@ -183,7 +183,7 @@ class Leaderboard(Cog):
     @slash_command()
     async def leaderboard_valorant(self, ctx, type=Param(default="mmr", choices=[OptionChoice("MVP", "mvp"), OptionChoice("MMR", "mmr")])):
         """
-        View the leaderboard for Valorant.
+        Voir le classement pour Valorant.
         """
         await self.leaderboard(ctx, 'valorant', type)
 
@@ -194,7 +194,7 @@ class Leaderboard(Cog):
     @slash_command()
     async def leaderboard_overwatch(self, ctx, type=Param(default="mmr", choices=[OptionChoice("MVP", "mvp"), OptionChoice("MMR", "mmr")])):
         """
-        View the leaderboard for Overwatch.
+        Voir le classement pour Overwatch.
         """
         await self.leaderboard(ctx, 'overwatch', type)
 
@@ -205,7 +205,7 @@ class Leaderboard(Cog):
     @slash_command()
     async def leaderboard_others(self, ctx, type=Param(default="mmr", choices=[OptionChoice("MVP", "mvp"), OptionChoice("MMR", "mmr")])):
         """
-        View the leaderboard for Other.
+        Voir le classement pour Autre.
         """
         await self.leaderboard(ctx, 'other', type)
     
@@ -232,7 +232,7 @@ class Leaderboard(Cog):
             return await ctx.send(embed=error(f"Aucune donnée à présenter pour le classement par {type}."))
         
         if ctx.author.id not in [x[1] for x in user_data]:
-            return await ctx.send(embed=error("Vous n'avez pas encore joué de game ou n'avez pas encore reçu de votes MVP."))
+            return await ctx.send(embed=error("Vous n'avez pas encore joué de partie ou n'avez pas encore reçu de votes MVP."))
         
         ign = await self.bot.fetchrow(f"SELECT ign FROM igns WHERE guild_id = {ctx.guild.id} and user_id = {ctx.author.id} and game = '{game}'")
         if ign:
@@ -267,7 +267,7 @@ class Leaderboard(Cog):
                 if data[4] >= 10:
                     display_mmr = f"**{int(skill*100)}** MMR"
                 else:
-                    display_mmr = f"**{data[4]}/10** Games Jouées"
+                    display_mmr = f"**{data[4]}/10** Parties Jouées"
                 
                 embed.add_field(
                     name=f"#{i + 1}",
@@ -295,7 +295,7 @@ class Leaderboard(Cog):
     @slash_command()
     async def rank_valorant(self, ctx, type = Param(choices=[OptionChoice('MMR', 'mmr'), OptionChoice('MVP', 'mvp')])):
         """
-        Check your rank for Valorant.
+        Vérifiez votre classement pour Valorant.
         """
         await self.rank(ctx, 'valorant', type)
     
@@ -306,7 +306,7 @@ class Leaderboard(Cog):
     @slash_command()
     async def rank_overwatch(self, ctx, type = Param(choices=[OptionChoice('MMR', 'mmr'), OptionChoice('MVP', 'mvp')])):
         """
-        Check your rank for Overwatch.
+        Vérifiez votre classement pour Overwatch.
         """
         await self.rank(ctx, 'overwatch', type)
     
@@ -317,7 +317,7 @@ class Leaderboard(Cog):
     @slash_command()
     async def rank_others(self, ctx, type = Param(choices=[OptionChoice('MMR', 'mmr'), OptionChoice('MVP', 'mvp')])):
         """
-        Check your rank for Others.
+        Vérifiez votre classement pour Autre.
         """
         await self.rank(ctx, 'others', type)
     
