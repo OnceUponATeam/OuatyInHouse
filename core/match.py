@@ -171,7 +171,7 @@ async def start_queue(bot, channel, game, author=None, existing_msg = None, game
         data = (data[0], 'na')
     icon_url = region_icon(data[1], game)
     if icon_url:
-        embed.set_author(name=f"{data[1].upper()} Queue", icon_url=icon_url)
+        embed.set_author(name=f"File {data[1].upper()}", icon_url=icon_url)
     
     duo_pref = await bot.fetchrow(f"SELECT * FROM duo_queue_preference WHERE guild_id = {channel.guild.id}")
     if duo_pref:
