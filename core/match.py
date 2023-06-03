@@ -302,52 +302,58 @@ class RoleButtons(ui.Button):
         return team
 
     async def add_participant(self, inter, button, view) -> None:
-        preference = await self.bot.fetchrow(f"SELECT * FROM queue_preference WHERE guild_id = {inter.guild.id}")
-        if preference:
-            preference = preference[1]
-        else:
-            preference = 1
-        
-        if preference == 2:
-            in_other_games = await self.bot.fetch(
-                f"SELECT * FROM game_member_data WHERE author_id = {inter.author.id} and game_id != '{view.game_id}'"
-            )
-            if in_other_games:
-                return await inter.send(
-                    embed=error(f"Vous ne pouvez pas faire partie de plusieurs files."),
-                    ephemeral=True,
-                )
-
-        label = button.label.lower()
-        team = "blue"
-
-        data = await self.bot.fetchrow(
-            f"SELECT * FROM game_member_data WHERE role = '{label}' and game_id = '{view.game_id}'"
-        )
+        data = await self.bot.fetchrow(f"SELECT * FROM igns WHERE game = 'lol' and user_id = {inter.author.id} and guild_id = {inter.guild.id}")
         if data:
-            if data[2] == "blue":
-                team = "red"
-            view.disabled.append(label)
+            preference = await self.bot.fetchrow(f"SELECT * FROM queue_preference WHERE guild_id = {inter.guild.id}")
+            if preference:
+                preference = preference[1]
+            else:
+                preference = 1
+            
+            if preference == 2:
+                in_other_games = await self.bot.fetch(
+                    f"SELECT * FROM game_member_data WHERE author_id = {inter.author.id} and game_id != '{view.game_id}'"
+                )
+                if in_other_games:
+                    return await inter.send(
+                        embed=error(f"Vous ne pouvez pas faire partie de plusieurs files."),
+                        ephemeral=True,
+                    )
 
-        await self.bot.execute(
-            "INSERT INTO game_member_data(author_id, role, team, game_id, queue_id, channel_id) VALUES($1, $2, $3, $4, $5, $6)",
-            inter.author.id,
-            label,
-            team,
-            view.game_id,
-            inter.message.id,
-            inter.channel.id
-        )
+            label = button.label.lower()
+            team = "blue"
 
-        embed = await view.gen_embed(inter.message, view.game_id)
+            data = await self.bot.fetchrow(
+                f"SELECT * FROM game_member_data WHERE role = '{label}' and game_id = '{view.game_id}'"
+            )
+            if data:
+                if data[2] == "blue":
+                    team = "red"
+                view.disabled.append(label)
 
-        await inter.message.edit(view=view, embed=embed, attachments=[])
+            await self.bot.execute(
+                "INSERT INTO game_member_data(author_id, role, team, game_id, queue_id, channel_id) VALUES($1, $2, $3, $4, $5, $6)",
+                inter.author.id,
+                label,
+                team,
+                view.game_id,
+                inter.message.id,
+                inter.channel.id
+            )
 
-        await inter.send(
-            embed=success(f"Vous avez été assigné à **{label.capitalize()}**."),
-            ephemeral=True,
-        )
+            embed = await view.gen_embed(inter.message, view.game_id)
 
+            await inter.message.edit(view=view, embed=embed, attachments=[])
+
+            await inter.send(
+                embed=success(f"Vous avez été assigné à **{label.capitalize()}**."),
+                ephemeral=True,
+            )
+        else:
+            await inter.send(
+                embed=success(f"Définis ton nom en jeu pour rejoindre une file avec la commande /ign."),
+                ephemeral=True,
+            )
     async def disable_buttons(self, inter, view):
         for label in view.disabled:
             for btn in view.children:
