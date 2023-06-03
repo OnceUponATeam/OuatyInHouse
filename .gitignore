@@ -134,3 +134,5 @@ main.sqlite
 
 # Intellj IDE stuff
 .idea
+.json
+.vscode/settings.json
