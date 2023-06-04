@@ -721,7 +721,7 @@ class ReadyButton(ui.Button):
                     result = await websocket.recv()
                     if result:
                         data = json.loads(result)
-                        response = ("🔵 https://draftlol.dawe.gg/" + data["roomId"] +"/" +data["bluePassword"], "🔴 https://draftlol.dawe.gg/" + data["roomId"] +"/" +data["redPassword"], "\n**Spectators:** https://draftlol.dawe.gg/" + data["roomId"])
+                        response = ("🔵 https://draftlol.dawe.gg/" + data["roomId"] +"/" +data["bluePassword"] + " (Uniquement un joueur de l'équipe bleu sur ce lien)", "🔴 https://draftlol.dawe.gg/" + data["roomId"] +"/" +data["redPassword"] + " (Uniquement un joueur de l'équipe bleu sur ce lien)", "\n**Spectators:** https://draftlol.dawe.gg/" + data["roomId"] + " (Lien pour tous les autres joueurs)")
             except asyncio.TimeoutError:
                 pass
         
@@ -782,7 +782,7 @@ class ReadyButton(ui.Button):
         await lobby_channel.send(
             embed=Embed(
                 title="🔗 Multi OP.GG",
-                description=f"🔵{teams['blue']}\n🔴{teams['red']} \n \n :warning: Si la **region** OP.GG est incorrecte, mettez à jour votre région de file avec `/setregion`",
+                description=f"🔵 {teams['blue']}\n🔴 {teams['red']}",
                 color=Color.blurple()
             )
         )
@@ -1140,14 +1140,14 @@ class ReadyButton(ui.Button):
                     game_lobby = await game_category.create_text_channel(
                         f"Lobby: {self.game_id}", overwrites=mutual_overwrites
                     )
-
-                    voice_channel_red = await game_category.create_voice_channel(
-                        f"Red: {self.game_id}", overwrites=overwrites_red
-                    )
+                    
                     voice_channel_blue = await game_category.create_voice_channel(
                         f"Blue: {self.game_id}", overwrites=overwrites_blue
                     )
-
+                    
+                    voice_channel_red = await game_category.create_voice_channel(
+                        f"Red: {self.game_id}", overwrites=overwrites_red
+                    )
                 except:
                     # If this ever fails due to limitations of discord or lack of permissions
                     await inter.send(
@@ -1179,11 +1179,13 @@ class ReadyButton(ui.Button):
                 )
                 await game_lobby.send(
                     embed=Embed(
-                        title=":warning: Notice",
-                        description=f"Pour terminer la partie, tapez `!win` ou `/win`.\n "
+                        title=":warning: INFORMATIONS",
+                        description=f"Votre partie est lancée ! Veuillez rejoindre votre vocal dès que possible.\n"
+                                    f"C'est à l'équipe Bleu de créer la partie presonnalisée. Entrez `ouat{self.game_id}` en tant que nom de partie et mot de passe.\n"
+                                    f"En type de partie, choississez mode aveugle et autorisez tous les spectateurs.\n\n"
+                                    f"Une fois la partie terminée, tapez `/win`.\n "
                                     f"**6** votes **DOIVENT** être émis.\n"
-                                    f"Seul les votes des **membres** du lobby compterons.\n \n"
-                                    f"**Facultatif:** Entrez `{self.game_id}` en tant que nom de partie personnalisée et mot de passe.",
+                                    f"Seuls les votes des **membres** du lobby compteront.\n \n",
                         color=Color.yellow(),
                     )
                 )

@@ -40,7 +40,12 @@ class Leaderboard(Cog):
         if not user_data:
             return await ctx.send(embed=error("Aucune donnée pour l'instant."))
 
-        embed = Embed(title=f"🏆 Classement", color=Color.blurple())
+        if type =='mmr':
+            title=f"🏆 Classement MMR"
+        elif type == 'mvp':
+            title=f"🏆 Classement MVP"
+
+        embed = Embed(title=title, color=Color.blurple())
         if ctx.guild.icon:
             embed.set_thumbnail(url=ctx.guild.icon.url)
 
@@ -124,7 +129,7 @@ class Leaderboard(Cog):
                 
                 embeds[current_embed].add_field(
                     name=name,
-                    value=f"{most_played_role} `{member_name}   {wins}W {losses}L {percentage}% WR {data[2]} MVP`",
+                    value=f"{most_played_role} `{member_name}    {data[2]} MVP ({percentage}% WR)`",
                     inline=False,
                 )
             elif type == "mmr":
@@ -136,13 +141,13 @@ class Leaderboard(Cog):
                 
                 embeds[current_embed].add_field(
                     name=name,
-                    value=f"{most_played_role} `{member_name}   {display_mmr} {wins}W {losses}L {percentage}% WR`",
+                    value=f"{most_played_role} `{member_name}   {display_mmr} ({wins}W/{losses}L {percentage}% WR)`",
                     inline=False,
                 )
             else:
                 embeds[current_embed].add_field(
                     name=name,
-                    value=f"{most_played_role} `{member_name}   {wins}W {losses}L {percentage}% WR`",
+                    value=f"{most_played_role} `{member_name}   {wins}W/{losses}L {percentage}% WR`",
                     inline=False,
                 )
 

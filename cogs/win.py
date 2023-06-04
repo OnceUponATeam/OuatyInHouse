@@ -44,10 +44,10 @@ class WinButtons(ui.View):
             )
 
             mentions = (
-                    f"🔴 Red Team: "
-                    + ", ".join(f"<@{data[0]}>" for data in member_data if data[2] == "red")
-                    + "\n🔵 Blue Team: "
+                    f"🔵 Blue Team: "
                     + ", ".join(f"<@{data[0]}>" for data in member_data if data[2] == "blue")
+                    + "\n🔴 Red Team: "
+                    + ", ".join(f"<@{data[0]}>" for data in member_data if data[2] == "red")
             )
 
             st_pref = await self.bot.fetchrow(f"SELECT * FROM switch_team_preference WHERE guild_id = {inter.guild.id}")
@@ -109,16 +109,16 @@ class WinButtons(ui.View):
             else:
                 for member_entry in member_data:
                     if member_entry[2] == winner.lower():
-                        winning_team_str += f"• {self.bot.role_emojis[member_entry[1]]} <@{member_entry[0]}> \n"
+                        winning_team_str += f"{self.bot.role_emojis[member_entry[1]]} <@{member_entry[0]}> \n"
                     else:
-                        losing_team_str += f"• {self.bot.role_emojis[member_entry[1]]} <@{member_entry[0]}> \n"
+                        losing_team_str += f"{self.bot.role_emojis[member_entry[1]]} <@{member_entry[0]}> \n"
             embed = Embed(
                 title=f"Partie terminée!",
                 description=f"La partie **{game_data[0]}** est terminée!",
                 color=Color.blurple(),
             )
-            embed.add_field(name="Equipe Victorieuse", value=winning_team_str)
-            embed.add_field(name="Equipe Perdante", value=losing_team_str)
+            embed.add_field(name=":partying_face: Equipe Victorieuse", value=winning_team_str)
+            embed.add_field(name=":slight_frown: Equipe Perdante", value=losing_team_str)
 
             log_channel_id = await self.bot.fetchrow(
                 f"SELECT * FROM winner_log_channel WHERE guild_id = {inter.guild.id} and game = '{game_data[8]}'"
@@ -332,12 +332,10 @@ class Win(Cog):
         )
 
         mentions = (
-                f"🔴 Red Team: "
+                f"🔵 Blue Team: "
+                + ", ".join(f"<@{data[0]}>" for data in member_data if data[2] == "blue")
+                + "\n🔴 Red Team: "
                 + ", ".join(f"<@{data[0]}>" for data in member_data if data[2] == "red")
-                + "\n🔵 Blue Team: "
-                + ", ".join(
-            f"<@{data[0]}>" for data in member_data if data[2] == "blue"
-            )
         )
 
         if (
@@ -349,13 +347,16 @@ class Win(Cog):
             )
 
         if not bypass:
-            embed1 = Embed(title="Un mauvais résultat?", description="Dans ce cas, **contactez les admins immédiatement** et **ne relancez pas une autre partie** jusqu'à ce que les résultats soient fixés. Les Admins doivent faire la commande `/admin change_winner`.", color=Color.yellow())
-            embed2 = Embed(title="Votez pour le Gagnant!", description="Quel équipe a gagné?", color=Color.red())
-            await channel.send(embeds=[embed1, embed2], view=WinButtons(self.bot, game_data[0]))
-                
-            # await msg.add_reaction("🔵")
-            # await msg.add_reaction("🔴")
-            await channel.send(mentions)
+            await channel.send(embed=Embed(
+                title="Votez pour le Gagnant !",
+                description=f"Quelle équipe a gagné ?\n" + mentions,
+                color=Color.red()),
+                view=WinButtons(self.bot, game_data[0]))
+            await channel.send(embed=Embed(
+                title="Un mauvais résultat ?", 
+                description="Dans ce cas, **contactez les admins immédiatement** et **ne relancez pas une autre partie** jusqu'à ce que les résultats soient fixés.", 
+                color=Color.yellow())    
+            )
             self.active_win_commands.append(channel.id)
         else:
             await WinButtons(self.bot, game_data[0]).check_end(channel, game_data, bypass, bypass_for_team)

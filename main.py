@@ -165,6 +165,7 @@ class MyBot(commands.Bot):
 
 
 # Enabling message content intent for the bot to support prefix commands.
+# A FAIRE : SUPPRIMER LA POSSIBILITÉ DE FAIRE DES COMMANDES AVEC DES PRÉFIXES
 intents = Intents.default()
 intents.message_content = True
 intents.members = True

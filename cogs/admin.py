@@ -787,7 +787,7 @@ class Admin(Cog):
                 ),
             }
             
-            category = await ctx.guild.create_category(name=f"Parties en cours de {game}", overwrites=overwrites)
+            category = await ctx.guild.create_category(name=f"Parties de {game} en cours", overwrites=overwrites)
             cate_data = await self.bot.fetchrow(f"SELECT * FROM game_categories WHERE guild_id = {ctx.guild.id} and game = '{game}'")
             if cate_data:
                 await self.bot.execute(f"UPDATE game_categories SET category_id = {category.id} WHERE guild_id = {ctx.guild.id} and game = '{game}'")
