@@ -389,7 +389,7 @@ class RoleButtons(ui.Button):
             data = await self.bot.fetch(
                 f"SELECT * FROM game_member_data WHERE role = '{member[1]}' and game_id = '{view.game_id}'"
             )
-            if len(data) == 2:
+            if len(data) >= 2:
                 if member[1] not in view.disabled:
                     view.disabled.append(member[1])
         
@@ -910,7 +910,7 @@ class ReadyButton(ui.Button):
                     duo = False
                 test_mode = await self.bot.check_testmode(self.msg.guild.id)
                 await self.msg.edit(
-                    embed=await Queue.gen_embed(self, self.msg, self.game_id, test_mode),
+                    embed=await Queue.gen_embed(self, self.msg, self.game_id),
                     view=Queue(self.bot, sbmm, duo, self.game),
                     content="Tous les joueurs n'étaient pas prêt, la file a été libérée.",
                 )
