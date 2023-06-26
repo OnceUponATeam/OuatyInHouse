@@ -197,7 +197,7 @@ class SpectateButton(ui.View):
     async def process_button(self, button, inter):
         await inter.response.defer()
 
-        if "Red" in button.label:
+        if "Rouge" in button.label:
             team = "Red"
         else:
             team = "Blue"
