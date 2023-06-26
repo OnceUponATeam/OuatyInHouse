@@ -920,7 +920,6 @@ class ReadyButton(ui.Button):
                         description="Les joueurs mentionnés on été supprimé de la file car ils n'étaient pas prêt à temps.",
                         color=Color.blurple(),
                     ),
-                    delete_after=60.0,
                 )
 
                 self.disable_button.stop()
@@ -1369,7 +1368,7 @@ class Queue(ui.View):
             )
             await inter.edit_original_message(
                 view=ReadyUp(self.bot, self.game, self.game_id, self.duo),
-                content="0/10 Joueurs sont prêts !",
+                content=f"0/10 Joueurs sont prêts ! <t:{int(datetime.timestamp((self.time_of_execution + timedelta(seconds=290))))}:t>",
                 embed=embed
             )
 

@@ -279,7 +279,7 @@ class Admin(Cog):
                 f"UPDATE mmr_rating SET mu = $1, sigma = $2, counter = $3 WHERE user_id = $4 and guild_id = $5 and game = '{member_entry[8]}'",
                 str(new_rating.mu),
                 str(new_rating.sigma),
-                counter[0] + 1,
+                counter[0],
                 winner_rating[i]['user_id'],
                 ctx.guild.id
             )
@@ -291,7 +291,7 @@ class Admin(Cog):
                 f"UPDATE mmr_rating SET mu = $1, sigma = $2, counter = $3 WHERE user_id = $4 and guild_id = $5 and game = '{member_entry[8]}'",
                 str(new_rating.mu),
                 str(new_rating.sigma),
-                counter[0] + 1,
+                counter[0],
                 loser_rating[i]['user_id'],
                 ctx.guild.id
             )
