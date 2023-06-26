@@ -867,7 +867,7 @@ class ReadyButton(ui.Button):
                 self.disable_button.stop()
                 return
 
-        if (datetime.now() - self.time_of_execution).seconds >= 300:
+        if (datetime.now() - self.time_of_execution).seconds >= 120:
             if self.msg:
                 ready_ups = await self.bot.fetch(
                     f"SELECT user_id FROM ready_ups WHERE game_id = '{self.game_id}'"
@@ -967,7 +967,7 @@ class ReadyButton(ui.Button):
             else:
                 embed = await self.anonymous_team_embed(ready_ups)
             await inter.message.edit(
-                f"{len(ready_ups)}/10 Joueurs sont prêts !\nCliquez sur prêt avant <t:{int(datetime.timestamp((self.time_of_execution + timedelta(seconds=290))))}:t>",
+                f"{len(ready_ups)}/10 Joueurs sont prêts !\nCliquez sur prêt avant <t:{int(datetime.timestamp((self.time_of_execution + timedelta(seconds=110))))}:t>",
                 embed=embed,
             )
 
@@ -1368,7 +1368,7 @@ class Queue(ui.View):
             )
             await inter.edit_original_message(
                 view=ReadyUp(self.bot, self.game, self.game_id, self.duo),
-                content=f"0/10 Joueurs sont prêts ! <t:{int(datetime.timestamp((self.time_of_execution + timedelta(seconds=290))))}:t>",
+                content="0/10 Joueurs sont prêts !",
                 embed=embed
             )
 
@@ -1376,4 +1376,4 @@ class Queue(ui.View):
                 description=f"Une game a été trouvée! Il est temps de cliquer sur prêt!", color=Color.blurple()
             )
 
-            await inter.message.reply(mentions, embed=embed, delete_after=300.0)
+            await inter.message.reply(mentions, embed=embed, delete_after=120.0)
