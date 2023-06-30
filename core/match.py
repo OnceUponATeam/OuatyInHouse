@@ -23,11 +23,26 @@ VALORANT_LABELS = ["Controller", "Initiator", "Sentinel", "Duelist", "Flex"]
 OVERWATCH_LABELS = ["Tank", "DPS 1", "DPS 2", "Support 1", "Support 2"]
 OTHER_LABELS = ["Role 1", "Role 2", "Role 3", "Role 4", "Role 5"]
 
+queueOn = False
+
+async def activateQueue():
+    global queueOn
+    queueOn = True
+    print(f"{queueOn}")
+
+async def deactivateQueue():
+    global queueOn
+    queueOn = False
+    print(f"{queueOn}")
+
+async def getQueueStatus():
+    return queueOn
+
 async def start_queue(bot, channel, game, author=None, existing_msg = None, game_id = None):
     def region_icon(region, game):
         if game == "lol":
             if region == "euw":
-                icon_url = "https://media.discordapp.net/attachments/1046664511324692520/1075444853028175934/OW_Europe.png"
+                icon_url = "https://cdn.discordapp.com/attachments/1029206760206114890/1120150231187722240/Logo_4bis.png"
             elif region == "eune":
                 icon_url = "https://media.discordapp.net/attachments/1046664511324692520/1075444853028175934/OW_Europe.png"
             elif region == "br":
@@ -75,7 +90,7 @@ async def start_queue(bot, channel, game, author=None, existing_msg = None, game
 
     def banner_icon(game):
         if game == "lol":
-            return "https://cdn.discordapp.com/attachments/880913866719117412/1111770498049777705/banner.png"
+            return "https://media.discordapp.net/attachments/293494686461722625/1123288883006816460/banneroldLARGE.png"
         elif game == "valorant":
             return "https://media.discordapp.net/attachments/1046664511324692520/1077958380964036689/image.png"
         elif game == "overwatch":
@@ -171,7 +186,7 @@ async def start_queue(bot, channel, game, author=None, existing_msg = None, game
         data = (data[0], 'na')
     icon_url = region_icon(data[1], game)
     if icon_url:
-        embed.set_author(name=f"File {data[1].upper()}", icon_url=icon_url)
+        embed.set_author(name=f"File OUAT Arena", icon_url=icon_url)
     
     duo_pref = await bot.fetchrow(f"SELECT * FROM duo_queue_preference WHERE guild_id = {channel.guild.id}")
     if duo_pref:
@@ -302,6 +317,13 @@ class RoleButtons(ui.Button):
         return team
 
     async def add_participant(self, inter, button, view) -> None:
+        print(f"La valeur lors de l'ajout : {queueOn}")
+        if queueOn == False:
+            return await inter.send(
+                    embed=error(f"Il n'est pas encore l'heure pour de la OUAT ARENA, reviens quand il sera l'heure :wink:"),
+                    ephemeral=True,
+                )
+
         preference = await self.bot.fetchrow(f"SELECT * FROM queue_preference WHERE guild_id = {inter.guild.id}")
         if preference:
             preference = preference[1]

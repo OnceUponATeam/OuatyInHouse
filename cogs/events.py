@@ -298,6 +298,16 @@ class Events(Cog):
             """
         )
 
+        await bot.execute(
+            """
+            CREATE TABLE IF NOT EXISTS schedule(
+                day INTEGER UNIQUE,
+                starting_hour INTEGER,
+                ending_hour INTEGER
+            )
+            """
+        )
+
     @Cog.listener()
     async def on_ready(self):
         print("*********\nLe bot est pret.\n*********")
@@ -384,6 +394,9 @@ class Events(Cog):
             )
                     and (
                     not embed.title == ":warning: ATTENTION"
+            )
+                    and (
+                    not embed.title == ":warning: INFORMATION"
             )
                     and (
                     not "Impossible d'enregistrer la partie" in embed.description

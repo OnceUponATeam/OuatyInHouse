@@ -7,6 +7,7 @@ from core.embeds import error, success
 from core.buttons import ConfirmationButtons, LinkButton
 from core.selectmenus import SelectMenuDeploy
 from core.match import start_queue
+from cogs.match import Match
 
 async def leaderboard_persistent(bot, channel, game):
     user_data = await bot.fetch(
@@ -838,6 +839,19 @@ class Admin(Cog):
         else:
             await self.bot.execute(f"INSERT INTO igns(guild_id, user_id, game, ign) VALUES(?,?,?,?)", ctx.guild.id, member.id, game, ign)
         await ctx.send(embed=success("Le nom en jeu a été modifié correctement."))
+    
+    @admin_slash.sub_command()
+    async def update_schedule(self, ctx, day, starting_hour, ending_hour):
+        """
+        Met à jour l'horaire d'une journée (1 = Lundi, 2 = Mardi,... 7 = Dimanche)
+        """
+        data = await self.bot.fetchrow(f"SELECT * FROM schedule WHERE day = {day}")
+        if data: 
+            await self.bot.execute(f"UPDATE schedule SET starting_hour = {starting_hour}, ending_hour = {ending_hour} WHERE day = {day}")
+        else:
+            await self.bot.execute(f"INSERT INTO schedule(day, starting_hour, ending_hour) VALUES (?,?,?)", day,starting_hour, ending_hour)
+        await ctx.send(embed=success("Le nouveau planning a bien été mis à jour"))
+        await Match.check_planning(self)
 
     @admin_slash.sub_command_group(name="reset")
     async def reset_slash(self, ctx):
