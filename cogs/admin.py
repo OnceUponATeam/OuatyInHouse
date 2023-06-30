@@ -280,7 +280,7 @@ class Admin(Cog):
                 f"UPDATE mmr_rating SET mu = $1, sigma = $2, counter = $3 WHERE user_id = $4 and guild_id = $5 and game = '{member_entry[8]}'",
                 str(new_rating.mu),
                 str(new_rating.sigma),
-                counter[0] + 1,
+                counter[0],
                 winner_rating[i]['user_id'],
                 ctx.guild.id
             )
@@ -292,7 +292,7 @@ class Admin(Cog):
                 f"UPDATE mmr_rating SET mu = $1, sigma = $2, counter = $3 WHERE user_id = $4 and guild_id = $5 and game = '{member_entry[8]}'",
                 str(new_rating.mu),
                 str(new_rating.sigma),
-                counter[0] + 1,
+                counter[0],
                 loser_rating[i]['user_id'],
                 ctx.guild.id
             )
@@ -788,7 +788,7 @@ class Admin(Cog):
                 ),
             }
             
-            category = await ctx.guild.create_category(name=f"Parties en cours de {game}", overwrites=overwrites)
+            category = await ctx.guild.create_category(name=f"Parties de {game} en cours", overwrites=overwrites)
             cate_data = await self.bot.fetchrow(f"SELECT * FROM game_categories WHERE guild_id = {ctx.guild.id} and game = '{game}'")
             if cate_data:
                 await self.bot.execute(f"UPDATE game_categories SET category_id = {category.id} WHERE guild_id = {ctx.guild.id} and game = '{game}'")

@@ -20,7 +20,7 @@ class Utility(Cog):
             return await ctx.send(embed=error("Vous avez déjà enregistré votre nom en jeu une fois pour ce jeu. Veuillez contacter les administrateurs."))
                    
         await self.bot.execute(f"INSERT INTO igns(guild_id, user_id, game, ign) VALUES(?,?,?,?)", ctx.guild.id, ctx.author.id, game, ign)
-        await ctx.send(embed=success("Votre nom en jeu a été enregistré correctement."))
+        await ctx.send(embed=success("Votre nom en jeu a été enregistré correctement."), ephemeral=True)
 
 def setup(bot):
     bot.add_cog(Utility(bot))

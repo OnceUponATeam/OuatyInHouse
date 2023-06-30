@@ -212,7 +212,7 @@ class SpectateButton(ui.View):
     async def process_button(self, button, inter):
         await inter.response.defer()
 
-        if "Red" in button.label:
+        if "Rouge" in button.label:
             team = "Red"
         else:
             team = "Blue"
@@ -324,52 +324,58 @@ class RoleButtons(ui.Button):
                     ephemeral=True,
                 )
 
-        preference = await self.bot.fetchrow(f"SELECT * FROM queue_preference WHERE guild_id = {inter.guild.id}")
-        if preference:
-            preference = preference[1]
-        else:
-            preference = 1
-        
-        if preference == 2:
-            in_other_games = await self.bot.fetch(
-                f"SELECT * FROM game_member_data WHERE author_id = {inter.author.id} and game_id != '{view.game_id}'"
-            )
-            if in_other_games:
-                return await inter.send(
-                    embed=error(f"Vous ne pouvez pas faire partie de plusieurs files."),
-                    ephemeral=True,
-                )
-
-        label = button.label.lower()
-        team = "blue"
-
-        data = await self.bot.fetchrow(
-            f"SELECT * FROM game_member_data WHERE role = '{label}' and game_id = '{view.game_id}'"
-        )
+        data = await self.bot.fetchrow(f"SELECT * FROM igns WHERE game = 'lol' and user_id = {inter.author.id} and guild_id = {inter.guild.id}")
         if data:
-            if data[2] == "blue":
-                team = "red"
-            view.disabled.append(label)
+            preference = await self.bot.fetchrow(f"SELECT * FROM queue_preference WHERE guild_id = {inter.guild.id}")
+            if preference:
+                preference = preference[1]
+            else:
+                preference = 1
+            
+            if preference == 2:
+                in_other_games = await self.bot.fetch(
+                    f"SELECT * FROM game_member_data WHERE author_id = {inter.author.id} and game_id != '{view.game_id}'"
+                )
+                if in_other_games:
+                    return await inter.send(
+                        embed=error(f"Vous ne pouvez pas faire partie de plusieurs files."),
+                        ephemeral=True,
+                    )
 
-        await self.bot.execute(
-            "INSERT INTO game_member_data(author_id, role, team, game_id, queue_id, channel_id) VALUES($1, $2, $3, $4, $5, $6)",
-            inter.author.id,
-            label,
-            team,
-            view.game_id,
-            inter.message.id,
-            inter.channel.id
-        )
+            label = button.label.lower()
+            team = "blue"
 
-        embed = await view.gen_embed(inter.message, view.game_id)
+            data = await self.bot.fetchrow(
+                f"SELECT * FROM game_member_data WHERE role = '{label}' and game_id = '{view.game_id}'"
+            )
+            if data:
+                if data[2] == "blue":
+                    team = "red"
+                view.disabled.append(label)
 
-        await inter.message.edit(view=view, embed=embed, attachments=[])
+            await self.bot.execute(
+                "INSERT INTO game_member_data(author_id, role, team, game_id, queue_id, channel_id) VALUES($1, $2, $3, $4, $5, $6)",
+                inter.author.id,
+                label,
+                team,
+                view.game_id,
+                inter.message.id,
+                inter.channel.id
+            )
 
-        await inter.send(
-            embed=success(f"Vous avez été assigné à **{label.capitalize()}**."),
-            ephemeral=True,
-        )
+            embed = await view.gen_embed(inter.message, view.game_id)
 
+            await inter.message.edit(view=view, embed=embed, attachments=[])
+
+            await inter.send(
+                embed=success(f"Vous avez été assigné à **{label.capitalize()}**."),
+                ephemeral=True,
+            )
+        else:
+            await inter.send(
+                embed=success(f"Définis ton nom en jeu pour rejoindre une file avec la commande /ign."),
+                ephemeral=True,
+            )
     async def disable_buttons(self, inter, view):
         for label in view.disabled:
             for btn in view.children:
@@ -405,7 +411,7 @@ class RoleButtons(ui.Button):
             data = await self.bot.fetch(
                 f"SELECT * FROM game_member_data WHERE role = '{member[1]}' and game_id = '{view.game_id}'"
             )
-            if len(data) == 2:
+            if len(data) >= 2:
                 if member[1] not in view.disabled:
                     view.disabled.append(member[1])
         
@@ -737,7 +743,7 @@ class ReadyButton(ui.Button):
                     result = await websocket.recv()
                     if result:
                         data = json.loads(result)
-                        response = ("🔵 https://draftlol.dawe.gg/" + data["roomId"] +"/" +data["bluePassword"], "🔴 https://draftlol.dawe.gg/" + data["roomId"] +"/" +data["redPassword"], "\n**Spectators:** https://draftlol.dawe.gg/" + data["roomId"])
+                        response = ("🔵 https://draftlol.dawe.gg/" + data["roomId"] +"/" +data["bluePassword"] + " (Uniquement un joueur de l'équipe bleu sur ce lien)", "🔴 https://draftlol.dawe.gg/" + data["roomId"] +"/" +data["redPassword"] + " (Uniquement un joueur de l'équipe bleu sur ce lien)", "\n**Spectators:** https://draftlol.dawe.gg/" + data["roomId"] + " (Lien pour tous les autres joueurs)")
             except asyncio.TimeoutError:
                 pass
         
@@ -798,7 +804,7 @@ class ReadyButton(ui.Button):
         await lobby_channel.send(
             embed=Embed(
                 title="🔗 Multi OP.GG",
-                description=f"🔵{teams['blue']}\n🔴{teams['red']} \n \n :warning: Si la **region** OP.GG est incorrecte, mettez à jour votre région de file avec `/setregion`",
+                description=f"🔵 {teams['blue']}\n🔴 {teams['red']}",
                 color=Color.blurple()
             )
         )
@@ -883,7 +889,7 @@ class ReadyButton(ui.Button):
                 self.disable_button.stop()
                 return
 
-        if (datetime.now() - self.time_of_execution).seconds >= 300:
+        if (datetime.now() - self.time_of_execution).seconds >= 120:
             if self.msg:
                 ready_ups = await self.bot.fetch(
                     f"SELECT user_id FROM ready_ups WHERE game_id = '{self.game_id}'"
@@ -926,7 +932,7 @@ class ReadyButton(ui.Button):
                     duo = False
                 test_mode = await self.bot.check_testmode(self.msg.guild.id)
                 await self.msg.edit(
-                    embed=await Queue.gen_embed(self, self.msg, self.game_id, test_mode),
+                    embed=await Queue.gen_embed(self, self.msg, self.game_id),
                     view=Queue(self.bot, sbmm, duo, self.game),
                     content="Tous les joueurs n'étaient pas prêt, la file a été libérée.",
                 )
@@ -936,7 +942,6 @@ class ReadyButton(ui.Button):
                         description="Les joueurs mentionnés on été supprimé de la file car ils n'étaient pas prêt à temps.",
                         color=Color.blurple(),
                     ),
-                    delete_after=60.0,
                 )
 
                 self.disable_button.stop()
@@ -984,7 +989,7 @@ class ReadyButton(ui.Button):
             else:
                 embed = await self.anonymous_team_embed(ready_ups)
             await inter.message.edit(
-                f"{len(ready_ups)}/10 Joueurs sont prêts !\nCliquez sur prêt avant <t:{int(datetime.timestamp((self.time_of_execution + timedelta(seconds=290))))}:t>",
+                f"{len(ready_ups)}/10 Joueurs sont prêts !\nCliquez sur prêt avant <t:{int(datetime.timestamp((self.time_of_execution + timedelta(seconds=110))))}:t>",
                 embed=embed,
             )
 
@@ -1156,14 +1161,14 @@ class ReadyButton(ui.Button):
                     game_lobby = await game_category.create_text_channel(
                         f"Lobby: {self.game_id}", overwrites=mutual_overwrites
                     )
-
-                    voice_channel_red = await game_category.create_voice_channel(
-                        f"Red: {self.game_id}", overwrites=overwrites_red
-                    )
+                    
                     voice_channel_blue = await game_category.create_voice_channel(
                         f"Blue: {self.game_id}", overwrites=overwrites_blue
                     )
-
+                    
+                    voice_channel_red = await game_category.create_voice_channel(
+                        f"Red: {self.game_id}", overwrites=overwrites_red
+                    )
                 except:
                     # If this ever fails due to limitations of discord or lack of permissions
                     await inter.send(
@@ -1195,11 +1200,13 @@ class ReadyButton(ui.Button):
                 )
                 await game_lobby.send(
                     embed=Embed(
-                        title=":warning: Notice",
-                        description=f"Pour terminer la partie, tapez `!win` ou `/win`.\n "
+                        title=":warning: INFORMATIONS",
+                        description=f"Votre partie est lancée ! Veuillez rejoindre votre vocal dès que possible.\n"
+                                    f"C'est à l'équipe Bleu de créer la partie presonnalisée. Entrez `ouat{self.game_id}` en tant que nom de partie et mot de passe.\n"
+                                    f"En type de partie, choississez mode aveugle et autorisez tous les spectateurs.\n\n"
+                                    f"Une fois la partie terminée, tapez `/win`.\n "
                                     f"**6** votes **DOIVENT** être émis.\n"
-                                    f"Seul les votes des **membres** du lobby compterons.\n \n"
-                                    f"**Facultatif:** Entrez `{self.game_id}` en tant que nom de partie personnalisée et mot de passe.",
+                                    f"Seuls les votes des **membres** du lobby compteront.\n \n",
                         color=Color.yellow(),
                     )
                 )
@@ -1391,4 +1398,4 @@ class Queue(ui.View):
                 description=f"Une game a été trouvée! Il est temps de cliquer sur prêt!", color=Color.blurple()
             )
 
-            await inter.message.reply(mentions, embed=embed, delete_after=300.0)
+            await inter.message.reply(mentions, embed=embed, delete_after=120.0)
