@@ -797,10 +797,10 @@ class Admin(Cog):
             
             info_channel = await category.create_text_channel("Informations")
  
-            embed = embed = Embed(title="File OuatyGor", description=f"Toutes les parties {display_game} en cours seront regroupés dans cette catégorie. N'hésitez pas à la déplacer ou à en changer le nom.", color=Color.red())
+            embed = embed = Embed(title="File OUAT Arena", description=f"Toutes les parties {display_game} en cours seront regroupés dans cette catégorie. N'hésitez pas à la déplacer ou à en changer le nom.", color=Color.red())
 
-            embed.set_image(url="https://media.discordapp.net/attachments/328696263568654337/1067908043624423497/image.png?width=1386&height=527")
-            view = LinkButton({"Vote for Us": "https://top.gg/bot/1001168331996409856/vote"}, {"Support": "https://discord.com/invite/8DZQcpxnbB"}, {"Website":"https://inhousequeue.xyz/"})
+            embed.set_image(url="https://media.discordapp.net/attachments/293494686461722625/1123288883006816460/banneroldLARGE.png")
+            view = LinkButton({"Ticket": "https://discord.com/channels/1121448988948824075/1121462151475908779"}, {"Siteweb":"https://www.onceuponateam.be/"})
             await info_channel.send(embed=embed, view=view)
                 
             await ctx.send(embed=success("L'installation s'est déroulée avec succès. Veuillez supprimer les anciens canaux de texte 'historique-des-matches', 'top-10' et 'informations' s'ils existent. Ils sont désormais inactifs."))
@@ -851,7 +851,7 @@ class Admin(Cog):
         else:
             await self.bot.execute(f"INSERT INTO schedule(day, starting_hour, ending_hour) VALUES (?,?,?)", day,starting_hour, ending_hour)
         await ctx.send(embed=success("Le nouveau planning a bien été mis à jour"))
-        await Match.check_planning(self)
+        #await Match.check_planning(self)
 
     @admin_slash.sub_command_group(name="reset")
     async def reset_slash(self, ctx):

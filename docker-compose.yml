@@ -2,8 +2,7 @@ version: '3.8'
 
 services:
   bot:
-    build: .
-    image: in-house-queue
+    image: ouatyigor:1.2
     # create a .env file in the root directory
     environment:
       TOKEN: ${TOKEN}
@@ -32,6 +31,8 @@ services:
       # Discord ID of the Error Log channel. Use the SAME ID for BOTH values if there is only 1 error log channel.
       ERROR_LOG_CHANNEL_ID_1: ${ERROR_LOG_CHANNEL_ID_1}
       ERROR_LOG_CHANNEL_ID_2: ${ERROR_LOG_CHANNEL_ID_2}
+      #Channel affichant les lancements et heure de prochaines queue
+      STARTING_CHANNEL_ID: ${STARTING_CHANNEL_ID}
     volumes:
       - inhouse-db:/app/db
     restart: on-failure

@@ -1,13 +1,14 @@
 import asyncio
 import datetime
 import pytz
+import os
 from disnake import Color, Embed
 from disnake.ext.commands import Cog, slash_command
 
 from core.match import start_queue, activateQueue, deactivateQueue, getQueueStatus
 from core.embeds import error
 
-startingChannel = 1120153576447148092
+startingChannel = os.getenv("STARTING_CHANNEL_ID") 
 justStarted = False #Permet de savoir si c'est un restart du bot ou simplement un nouveau cycle.
 
 class Match(Cog):
@@ -39,9 +40,8 @@ class Match(Cog):
 
     async def check_planning(self):
         channel = self.bot.get_channel(startingChannel)
-
-        now = datetime.datetime.now(pytz.timezone("Europe/Brussels"))
-
+        
+        now = datetime.datetime.now(pytz.timezone("Europe/Brussels"))  
         dayOfQueue = now.isoweekday()
         check = True
         dayBeforeQueue = 0
@@ -109,7 +109,9 @@ class Match(Cog):
         )
         await self.send_new_queues()
         channel = self.bot.get_channel(startingChannel)
-        await channel.send(f"# Lancement de la OUAT ARENA !\n**La OUAT ARENA est relancée !**\nPour jouer, cliquez ici : <#1109249201268858953> et choisissez votre rôle !\nLa file sera active jusqu'au <t:{stopTime}:D> à <t:{stopTime}:t>\n||@everyone||")
+        channels = await self.bot.fetch("SELECT * FROM queuechannels")
+        queueChannel = channels[0]
+        await channel.send(f"# Lancement de la OUAT ARENA !\n**La OUAT ARENA est relancée !**\nPour jouer, cliquez ici : <#{queueChannel[0]}> et choisissez votre rôle !\nLa file sera active jusqu'au <t:{stopTime}:D> à <t:{stopTime}:t>\n||@everyone||")
         global justStarted
         justStarted = False
         await self.check_planning()
