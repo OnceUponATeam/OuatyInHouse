@@ -8,7 +8,7 @@ from disnake.ext.commands import Cog, slash_command
 from core.match import start_queue, activateQueue, deactivateQueue, getQueueStatus
 from core.embeds import error
 
-startingChannel = os.getenv("STARTING_CHANNEL_ID") 
+startingChannel = int(os.getenv("STARTING_CHANNEL_ID"))
 justStarted = False #Permet de savoir si c'est un restart du bot ou simplement un nouveau cycle.
 
 class Match(Cog):
@@ -39,6 +39,8 @@ class Match(Cog):
                     print(traceback.format_exc())
 
     async def check_planning(self):
+        print("CA PASSE")
+        print(f"zergfzeiugfbzeuf : {startingChannel}")
         channel = self.bot.get_channel(startingChannel)
         
         now = datetime.datetime.now(pytz.timezone("Europe/Brussels"))  
@@ -87,6 +89,7 @@ class Match(Cog):
         if now < starting_time:
             timeLeft = starting_time - now
             channel = self.bot.get_channel(startingChannel)
+            
             await channel.send(f"Les prochaines parties de OUAT ARENA pourront se faire le <t:{round(starting_time.timestamp())}:D> à <t:{round(starting_time.timestamp())}:t>")
             
             await asyncio.sleep(timeLeft.total_seconds())
