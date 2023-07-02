@@ -148,8 +148,8 @@ async def start_queue(bot, channel, game, author=None, existing_msg = None, game
         else:
             slot1 = "Pas encore de joueur"
             slot2 = "Pas encore de joueur"
-        embed.add_field(name="Groupe 1", value=slot1)
-        embed.add_field(name="Groupe 2", value=slot2)
+        embed.add_field(name="👥 Participants", value=slot1)
+        embed.add_field(name="👥 Participants", value=slot2)
         sbmm = True
     else:
         if existing_msg:
@@ -317,7 +317,6 @@ class RoleButtons(ui.Button):
         return team
 
     async def add_participant(self, inter, button, view) -> None:
-        print(f"La valeur lors de l'ajout : {queueOn}")
         if queueOn == False:
             return await inter.send(
                     embed=error(f"Il n'est pas encore l'heure pour de la OUAT ARENA, reviens quand il sera l'heure :wink:"),
@@ -458,7 +457,8 @@ class LeaveButton(ui.Button):
                 )
                 if len(data) < 2:
                     if button.disabled:
-                        view.disabled.remove(button.label.lower())
+                        if button.label.lower() in view.disabled:
+                            view.disabled.remove(button.label.lower())
                         button.disabled = False
                         button.style = ButtonStyle.green
 
@@ -632,7 +632,7 @@ class ReadyButton(ui.Button):
     async def anonymous_team_embed(self, ready_ups):
         embed = self.msg.embeds[0]
         embed.clear_fields()
-        embed.description = "Il ne s'agit pas des équipes définitives."
+        embed.description = ":warning: Il ne s'agit pas des équipes définitives. :warning:"
         duos = await self.bot.fetch(f"SELECT * FROM duo_queue WHERE game_id = '{self.game_id}'")
         in_duo = {}
         for i, duo in enumerate(duos):
@@ -670,6 +670,7 @@ class ReadyButton(ui.Button):
 
         return embed
 
+    # N'est pas utilisé pour le moment sur OUAT ARENA
     async def team_embed(self, ready_ups):
 
         embed = self.msg.embeds[0]
@@ -867,8 +868,8 @@ class ReadyButton(ui.Button):
             required_members = 10
 
         if len(members) != required_members:
-            self.disable_button.stop()
             await start_queue(self.bot, msg.channel, self.game, None, msg, self.game_id)
+            self.disable_button.stop()
 
     @tasks.loop(seconds=1)
     async def disable_button(self):
@@ -964,15 +965,15 @@ class ReadyButton(ui.Button):
         await self.check_members(inter.message)
 
         game_members = [member[0] for member in self.data]
-        ready_ups = await self.bot.fetch(
-            f"SELECT * FROM ready_ups WHERE game_id = '{self.game_id}'"
-        )
-        ready_ups = [x[1] for x in ready_ups]
-
+        
         if inter.author.id in game_members:
+            ready_ups = await self.bot.fetch(
+                f"SELECT * FROM ready_ups WHERE game_id = '{self.game_id}'"
+            )
+            ready_ups = [x[1] for x in ready_ups]
             if inter.author.id in ready_ups:
                 await inter.send(
-                    embed=success("Vous êtes prêts, on le sait."), ephemeral=True
+                    embed=success("Vous avez déjà indiqué être prêt."), ephemeral=True
                 )
                 return
 
@@ -1363,6 +1364,11 @@ class Queue(ui.View):
             )
             if len(data) == 2:
                 checks_passed += 1
+            # Le elif devrait permettre de supprimer une personne de la file si il y a plus de deux joueurs avec le même rôle
+            elif len(data) > 2: 
+                print("AH ON A PAS FAIT CA POUR RIEN! (Il y avait plus de 2 personnes avec le même rôle)")
+                await self.bot.execute(f"DELETE FROM game_member_data WHERE user_id = (SELECT user_id FROM game_member_data WHERE game_id = '{self.game_id}' and role = '{button.label.lower()} LIMIT 1 OFFSET 2)")
+
 
         if await self.bot.check_testmode(inter.guild.id):
             required_checks = 1

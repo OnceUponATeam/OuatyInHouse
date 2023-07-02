@@ -39,8 +39,6 @@ class Match(Cog):
                     print(traceback.format_exc())
 
     async def check_planning(self):
-        print("CA PASSE")
-        print(f"zergfzeiugfbzeuf : {startingChannel}")
         channel = self.bot.get_channel(startingChannel)
         
         now = datetime.datetime.now(pytz.timezone("Europe/Brussels"))  
