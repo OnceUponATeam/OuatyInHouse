@@ -2,7 +2,7 @@ Résultats erronés ? Contactez un membre du staff
 Consultez votre propre classement avec /rank
 Votre MMR sera visible après 10 matchs de placement avec MMR activé.
 N'oubliez pas d'ajouter votre nom en jeu avec /ign
-Un mauvais comportement ? Faites un ticket ici : <#1121462151475908779>
+Un mauvais comportement ? Faites un ticket dans le salon aide
 Vous manquez d'énergie ? HOLY est LA solution : https://fr.weareholy.com/OUAT
 Vous avez 10% de réduction sur le site : https://fr.weareholy.com/OUAT avec le code "OUAT".
 La commande /leaderboard_lol vous permet de voir le classement MMR ou MVP.

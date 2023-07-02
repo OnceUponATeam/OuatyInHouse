@@ -103,19 +103,20 @@ class Match(Cog):
 
     async def start_ouat_arena(self, stopTime):
         await activateQueue()
+        global justStarted
         #Supprime tous les joueurs actuellement en file (Permet de s'assurer que personne ne soit bloqué dans une précédente file)
-        await self.bot.execute(
-            f"DELETE FROM game_member_data"
-        )#Supprime tous les duos actuellement en file
-        await self.bot.execute(
-            f"DELETE FROM duo_queue "
-        )
+        if not justStarted:
+            await self.bot.execute(
+                f"DELETE FROM game_member_data"
+            )#Supprime tous les duos actuellement en file
+            await self.bot.execute(
+                f"DELETE FROM duo_queue "
+            )
         await self.send_new_queues()
         channel = self.bot.get_channel(startingChannel)
         channels = await self.bot.fetch("SELECT * FROM queuechannels")
         queueChannel = channels[0]
         await channel.send(f"# Lancement de la OUAT ARENA !\n**La OUAT ARENA est relancée !**\nPour jouer, cliquez ici : <#{queueChannel[0]}> et choisissez votre rôle !\nLa file sera active jusqu'au <t:{stopTime}:D> à <t:{stopTime}:t>\n||@everyone||")
-        global justStarted
         justStarted = False
         await self.check_planning()
             
