@@ -293,7 +293,9 @@ class Events(Cog):
                 guild_id INTEGER,
                 user_id INTEGER,
                 game TEXT,
-                ign TEXT
+                ign TEXT,
+                role1 INTEGER,
+                role2 INTEGER
             )
             """
         )

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   bot:
-    image: ouatyigor:1.2
+    image: ouatyigor:2.0
     # create a .env file in the root directory
     environment:
       TOKEN: ${TOKEN}
