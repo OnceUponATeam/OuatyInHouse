@@ -294,8 +294,8 @@ class Events(Cog):
                 user_id INTEGER,
                 game TEXT,
                 ign TEXT,
-                role1 INTEGER,
-                role2 INTEGER
+                main_role INTEGER,
+                second_role INTEGER
             )
             """
         )

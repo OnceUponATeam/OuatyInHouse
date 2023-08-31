@@ -7,11 +7,16 @@ import os
 
 load_dotenv()
 
-TOP_ROLE = os.getenv("TOP_ROLE")
-JUNGLE_ROLE = os.getenv("JUNGLE_ROLE")
-MID_ROLE = os.getenv("MID_ROLE")
-ADC_ROLE = os.getenv("ADC_ROLE")
-SUPPORT_ROLE = os.getenv("SUPPORT_ROLE")
+TOP_MAIN_ROLE = os.getenv("TOP_MAIN_ROLE")
+JUNGLE_MAIN_ROLE = os.getenv("JUNGLE_MAIN_ROLE")
+MID_MAIN_ROLE = os.getenv("MID_MAIN_ROLE")
+ADC_MAIN_ROLE = os.getenv("ADC_MAIN_ROLE")
+SUPPORT_MAIN_ROLE = os.getenv("SUPPORT_MAIN_ROLE")
+TOP_SECOND_ROLE = os.getenv("TOP_SECOND_ROLE")
+JUNGLE_SECOND_ROLE = os.getenv("JUNGLE_SECOND_ROLE")
+MID_SECOND_ROLE = os.getenv("MID_SECOND_ROLE")
+ADC_SECOND_ROLE = os.getenv("ADC_SECOND_ROLE")
+SUPPORT_SECOND_ROLE = os.getenv("SUPPORT_SECOND_ROLE")
 
 class Utility(Cog):
     """
@@ -22,7 +27,7 @@ class Utility(Cog):
 
     @slash_command()
     #async def ign(self, ctx, ign, role1 = Param(choices={"TOP": "top", "JUNGLE": "jungle", "MID": "mid", "ADC": "adc", "SUPPORT": "support"}), role2 = Param(choices={"TOP": "top", "JUNGLE": "jungle", "MID": "mid", "ADC": "adc", "SUPPORT": "support"}), game = Param(choices={"League Of Legends": "lol", "Valorant": "valorant", "Overwatch": "overwatch", "Other": "other"})):
-    async def ign(self, ctx, ign, role1 = Param(choices={"TOP": TOP_ROLE, "JUNGLE": JUNGLE_ROLE, "MID": MID_ROLE, "ADC": ADC_ROLE, "SUPPORT": SUPPORT_ROLE}), role2 = Param(choices={"TOP": TOP_ROLE, "JUNGLE": JUNGLE_ROLE, "MID": MID_ROLE, "ADC": ADC_ROLE, "SUPPORT": SUPPORT_ROLE})):    
+    async def ign(self, ctx, ign, main_role = Param(choices={"TOP": TOP_MAIN_ROLE, "JUNGLE": JUNGLE_MAIN_ROLE, "MID": MID_MAIN_ROLE, "ADC": ADC_MAIN_ROLE, "SUPPORT": SUPPORT_MAIN_ROLE}), second_role = Param(choices={"TOP": TOP_SECOND_ROLE, "JUNGLE": JUNGLE_SECOND_ROLE, "MID": MID_SECOND_ROLE, "ADC": ADC_SECOND_ROLE, "SUPPORT": SUPPORT_SECOND_ROLE})):    
         """
         Indiquez votre nom en jeu.
         """
@@ -33,14 +38,14 @@ class Utility(Cog):
         if data:
             return await ctx.send(embed=error("Vous avez déjà enregistré votre nom en jeu une fois pour ce jeu. Veuillez contacter les administrateurs."))
                    
-        await self.bot.execute(f"INSERT INTO igns(guild_id, user_id, game, ign, role1, role2) VALUES(?,?,?,?,?,?)", ctx.guild.id, ctx.author.id, game, ign, int(role1), int(role2))
-        if role1 == role2:
-            role = guild.get_role(int(role1))
+        await self.bot.execute(f"INSERT INTO igns(guild_id, user_id, game, ign, main_role, second_role) VALUES(?,?,?,?,?,?)", ctx.guild.id, ctx.author.id, game, ign, int(main_role), int(second_role))
+        if main_role == second_role:
+            role = guild.get_role(int(main_role))
             await user.add_roles(role, reason="Ajouté via /ign")
-        elif role1 != role2:
-            primary_role = guild.get_role(int(role1))
+        elif main_role != second_role:
+            primary_role = guild.get_role(int(main_role))
             print(primary_role)
-            secondary_role = guild.get_role(int(role2))
+            secondary_role = guild.get_role(int(second_role))
             print(secondary_role)
             await user.add_roles(primary_role, secondary_role, reason="Ajouté via /ign")
         await ctx.send(embed=success("Votre nom en jeu a été enregistré correctement."), ephemeral=True)

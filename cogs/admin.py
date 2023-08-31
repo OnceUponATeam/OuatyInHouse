@@ -13,13 +13,19 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-TOP_ROLE = os.getenv("TOP_ROLE")
-JUNGLE_ROLE = os.getenv("JUNGLE_ROLE")
-MID_ROLE = os.getenv("MID_ROLE")
-ADC_ROLE = os.getenv("ADC_ROLE")
-SUPPORT_ROLE = os.getenv("SUPPORT_ROLE")
+TOP_MAIN_ROLE = os.getenv("TOP_MAIN_ROLE")
+JUNGLE_MAIN_ROLE = os.getenv("JUNGLE_MAIN_ROLE")
+MID_MAIN_ROLE = os.getenv("MID_MAIN_ROLE")
+ADC_MAIN_ROLE = os.getenv("ADC_MAIN_ROLE")
+SUPPORT_MAIN_ROLE = os.getenv("SUPPORT_MAIN_ROLE")
+TOP_SECOND_ROLE = os.getenv("TOP_SECOND_ROLE")
+JUNGLE_SECOND_ROLE = os.getenv("JUNGLE_SECOND_ROLE")
+MID_SECOND_ROLE = os.getenv("MID_SECOND_ROLE")
+ADC_SECOND_ROLE = os.getenv("ADC_SECOND_ROLE")
+SUPPORT_SECOND_ROLE = os.getenv("SUPPORT_SECOND_ROLE")
 
 async def leaderboard_persistent(bot, channel, game):
+    """
     user_data = await bot.fetch(
         f"SELECT *, (points.wins + 0.0) / (MAX(points.wins + points.losses, 1.0) + 0.0) AS percentage FROM points WHERE guild_id = {channel.guild.id} and game = '{game}'"
     )
@@ -27,7 +33,13 @@ async def leaderboard_persistent(bot, channel, game):
         user_data = sorted(list(user_data), key=lambda x: x[4], reverse=True)
         user_data = sorted(list(user_data), key=lambda x: x[2], reverse=True)
         # user_data = sorted(list(user_data), key=lambda x: float(x[2]) - (2 * float(x[3])), reverse=True)
-
+    """
+    user_data = await bot.fetch(
+        f"SELECT * FROM mmr_rating WHERE guild_id = {channel.guild.id} and game = '{game}'"
+    )
+    if user_data:
+        user_data = sorted(list(user_data), key=lambda x: float(x[2]) - (2 * float(x[3])), reverse=True)
+    
     embed = Embed(title=f"🏆 Classement", color=Color.yellow())
     if channel.guild.icon:
         embed.set_thumbnail(url=channel.guild.icon.url)
@@ -76,7 +88,22 @@ async def leaderboard_persistent(bot, channel, game):
         else:
             most_played_role = "<:fill:1066868480537800714>"
 
-        st_pref = await bot.fetchrow(f"SELECT * FROM switch_team_preference WHERE guild_id = {channel.guild.id}")
+        user_data = await bot.fetchrow(f"SELECT * FROM points WHERE user_id = {data[1]} and guild_id = {channel.guild.id} and game = '{game}'")
+        if user_data:
+            wins = user_data[2]
+            losses = user_data[3]
+        else:
+            wins = 0
+            losses = 0
+        total = wins + losses
+        if not total:
+            total = 1
+
+        percentage = round((wins / total) * 100)
+
+        # st_pref = await bot.fetchrow(f"SELECT * FROM switch_team_preference WHERE guild_id = {channel.guild.id}")
+        
+        '''
         if not st_pref:
             mmr_data = await bot.fetchrow(f"SELECT * FROM mmr_rating WHERE user_id = {data[1]} and guild_id = {channel.guild.id} and game = '{game}'")
             if mmr_data:
@@ -89,6 +116,7 @@ async def leaderboard_persistent(bot, channel, game):
                 display_mmr = f"0/10GP"
         else:
             display_mmr = ""
+        '''
 
         if i+1 == 1:
             name = "🥇"
@@ -98,6 +126,12 @@ async def leaderboard_persistent(bot, channel, game):
             name = "🥉"
         else:
             name = f"#{i+1}"
+
+        skill = round(float(data[2]) - (2 * float(data[3])), 2)
+        if data[4] >= 10:
+            display_mmr = f"{int(skill*100)}"
+        else:
+            display_mmr = f"{data[4]}/10"
         
         member = channel.guild.get_member(data[1])
         if member:
@@ -107,7 +141,7 @@ async def leaderboard_persistent(bot, channel, game):
 
         embed.add_field(
             name=name,
-            value=f"{most_played_role} `{member_name}   {display_mmr} {data[2]}W {data[3]}L {round(data[5]*100)}% WR`",
+            value=f"{most_played_role} `{member_name}   {display_mmr} {wins}W {losses}L {percentage}% WR`",
             inline=False,
         )
 
@@ -839,29 +873,40 @@ class Admin(Cog):
             await ctx.send(embed=error("Une erreur s'est produite. Veuillez revérifier l'ID de l'utilisateur."))
 
     @admin_slash.sub_command()
-    async def update_ign(self, ctx, member: Member, ign, role1 = Param(choices={"TOP": TOP_ROLE, "JUNGLE": JUNGLE_ROLE, "MID": MID_ROLE, "ADC": ADC_ROLE, "SUPPORT": SUPPORT_ROLE}), role2 = Param(choices={"TOP": TOP_ROLE, "JUNGLE": JUNGLE_ROLE, "MID": MID_ROLE, "ADC": ADC_ROLE, "SUPPORT": SUPPORT_ROLE})):
+    async def update_ign(self, ctx, member: Member, ign, main_role = Param(choices={"TOP": TOP_MAIN_ROLE, "JUNGLE": JUNGLE_MAIN_ROLE, "MID": MID_MAIN_ROLE, "ADC": ADC_MAIN_ROLE, "SUPPORT": SUPPORT_MAIN_ROLE}), second_role = Param(choices={"TOP": TOP_SECOND_ROLE, "JUNGLE": JUNGLE_SECOND_ROLE, "MID": MID_SECOND_ROLE, "ADC": ADC_SECOND_ROLE, "SUPPORT": SUPPORT_SECOND_ROLE})):
         """
         Met à jour le nom en jeux d'un joueur.
         """
         guild = self.bot.get_guild(ctx.guild_id)
-        top_role = guild.get_role(int(TOP_ROLE))
-        jungle_role = guild.get_role(int(JUNGLE_ROLE))
-        mid_role = guild.get_role(int(MID_ROLE))
-        adc_role = guild.get_role(int(ADC_ROLE))
-        support_role = guild.get_role(int(SUPPORT_ROLE))
+        top_main_role = guild.get_role(int(TOP_MAIN_ROLE))
+        jungle_main_role = guild.get_role(int(JUNGLE_MAIN_ROLE))
+        mid_main_role = guild.get_role(int(MID_MAIN_ROLE))
+        adc_main_role = guild.get_role(int(ADC_MAIN_ROLE))
+        support_main_role = guild.get_role(int(SUPPORT_MAIN_ROLE))
+        top_second_role = guild.get_role(int(TOP_SECOND_ROLE))
+        jungle_second_role = guild.get_role(int(JUNGLE_SECOND_ROLE))
+        mid_second_role = guild.get_role(int(MID_SECOND_ROLE))
+        adc_second_role = guild.get_role(int(ADC_SECOND_ROLE))
+        support_second_role = guild.get_role(int(SUPPORT_SECOND_ROLE))
+        
         game = "lol"
         data = await self.bot.fetchrow(f"SELECT * FROM igns WHERE game = '{game}' and user_id = {member.id} and guild_id = {ctx.guild.id}")
         if data:
-            primary_role = guild.get_role(int(role1))
-            secondary_role = guild.get_role(int(role2))
-            await self.bot.execute(f"UPDATE igns SET ign = ?, role1 = ?, role2 = ? WHERE guild_id = ? and user_id = ? and game = ?", ign, int(role1), int(role2), ctx.guild.id, member.id, game)
-            await member.remove_roles(top_role, jungle_role, mid_role, adc_role, support_role, reason = "Delete via update ign")
-            if role1 == role2:
+            primary_role = guild.get_role(int(main_role))
+            secondary_role = guild.get_role(int(second_role))
+            await self.bot.execute(f"UPDATE igns SET ign = ?, main_role = ?, second_role = ? WHERE guild_id = ? and user_id = ? and game = ?", ign, int(main_role), int(second_role), ctx.guild.id, member.id, game)
+            await member.remove_roles(top_main_role, jungle_main_role, mid_main_role, adc_main_role, support_main_role, top_second_role, jungle_second_role, mid_second_role, adc_second_role, support_second_role, reason = "Delete via update ign")
+            if main_role == second_role:
                 await member.add_roles(primary_role, reason="Ajouté via /ign")
-            elif role1 != role2:
+            elif main_role != second_role:
                 await member.add_roles(primary_role, secondary_role, reason="Ajouté via /ign")
         else:
-            await self.bot.execute(f"INSERT INTO igns(guild_id, user_id, game, ign) VALUES(?,?,?,?)", ctx.guild.id, member.id, game, ign)
+            await self.bot.execute(f"INSERT INTO igns(guild_id, user_id, game, ign, main_role, second_role) VALUES(?,?,?,?,?,?)", ctx.guild.id, member.id, game, ign, int(main_role), int(second_role))
+            await member.remove_roles(top_main_role, jungle_main_role, mid_main_role, adc_main_role, support_main_role, top_second_role, jungle_second_role, mid_second_role, adc_second_role, support_second_role, reason = "Delete via update ign")
+            if main_role == second_role:
+                await member.add_roles(primary_role, reason="Ajouté via /ign")
+            elif main_role != second_role:
+                await member.add_roles(primary_role, secondary_role, reason="Ajouté via /ign")
         await ctx.send(embed=success("Le nom en jeu a été modifié correctement."))
     
     @admin_slash.sub_command()
