@@ -744,7 +744,7 @@ class ReadyButton(ui.Button):
                     result = await websocket.recv()
                     if result:
                         data = json.loads(result)
-                        response = ("🔵 https://draftlol.dawe.gg/" + data["roomId"] +"/" +data["bluePassword"] + " (Uniquement un joueur de l'équipe bleu sur ce lien)", "🔴 https://draftlol.dawe.gg/" + data["roomId"] +"/" +data["redPassword"] + " (Uniquement un joueur de l'équipe bleu sur ce lien)", "\n**Spectators:** https://draftlol.dawe.gg/" + data["roomId"] + " (Lien pour tous les autres joueurs)")
+                        response = ("🔵 https://draftlol.dawe.gg/" + data["roomId"] +"/" +data["bluePassword"] + " (Uniquement un joueur de l'équipe bleu sur ce lien)", "🔴 https://draftlol.dawe.gg/" + data["roomId"] +"/" +data["redPassword"] + " (Uniquement un joueur de l'équipe rouge sur ce lien)", "\n**Spectators:** https://draftlol.dawe.gg/" + data["roomId"] + " (Lien pour tous les autres joueurs)")
             except asyncio.TimeoutError:
                 pass
         
@@ -934,7 +934,7 @@ class ReadyButton(ui.Button):
                 test_mode = await self.bot.check_testmode(self.msg.guild.id)
                 await self.msg.edit(
                     embed=await Queue.gen_embed(self, self.msg, self.game_id),
-                    view=Queue(self.bot, sbmm, duo, self.game),
+                    view=Queue(self.bot, sbmm, duo, self.game, test_mode),
                     content="Tous les joueurs n'étaient pas prêt, la file a été libérée.",
                 )
                 await self.msg.channel.send(
